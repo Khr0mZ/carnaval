@@ -11,8 +11,8 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preload" as="image" href="assets/teatro-falla.webp" fetchpriority="high">
   <link rel="stylesheet" href="fonts.css?v=4">
-  <link rel="stylesheet" href="styles.css?v=4">
-  <script src="app.js?v=4" defer></script>
+  <link rel="stylesheet" href="styles.css?v=5">
+  <script src="app.js?v=5" defer></script>
 </head>
 <body>
   <div class="theatre-backdrop" aria-hidden="true"></div>
@@ -59,10 +59,14 @@
         <div class="category-tickets" id="category-tickets" role="group" aria-label="Filtrar por modalidad"></div>
        <div class="filter-row">
         <label class="search-field"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">Buscar agrupación</span><input type="search" id="search" placeholder="El nombre de una agrupación…" autocomplete="off"><kbd aria-hidden="true">/</kbd></label>
+        <div class="member-filter" id="member-filter">
+          <label for="member-search">Integrante</label>
+          <div class="member-field"><input type="search" id="member-search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="member-options" aria-describedby="member-help" placeholder="Nombre o apodo…" autocomplete="off" spellcheck="false"><button type="button" id="clear-member" aria-label="Quitar integrante" hidden><svg class="icon"><use href="#i-close"/></svg></button></div>
+          <div class="member-suggestions" id="member-suggestions" hidden><ul role="listbox" id="member-options" aria-label="Sugerencias de integrantes"></ul><p id="member-suggestion-status" role="status" aria-live="polite"></p></div>
+        </div>
         <label class="select-field"><span>Año</span><select id="year-filter" aria-label="Filtrar por año"><option value="all">Todos</option></select></label>
-        <label class="select-field sort-field"><span>Orden del programa</span><select id="sort" aria-label="Ordenar resultados"><option value="recent">Más recientes</option><option value="oldest">Más antiguos</option><option value="az">Nombre A–Z</option><option value="photos">Más fotografías</option></select></label>
        </div>
-       <div class="filter-foot"><span>Las cifras cuentan las fotos del álbum; las portadas se indican aparte.</span><button class="reset-filters" id="reset-filters" type="button" hidden>Restablecer filtros</button></div>
+       <div class="filter-foot"><span id="member-help">Elige un integrante para encontrar sus agrupaciones. Nombres según las etiquetas del álbum.</span><button class="reset-filters" id="reset-filters" type="button" hidden>Restablecer filtros</button></div>
       </div>
       <div class="results-bar"><p id="results-count" role="status" aria-live="polite">Abriendo el álbum…</p><span id="results-pages"></span></div>
       <div class="catalog-grid" id="catalog-grid" aria-label="Resultados de la enciclopedia"><div class="loading-state">Se está abriendo el telón…</div></div>

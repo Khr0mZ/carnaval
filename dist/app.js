@@ -4,16 +4,19 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const icon = (name, className = '') => `<svg class="icon ${className}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
+const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').replace(/\s+/g, ' ').trim();
 const number = value => new Intl.NumberFormat('es-ES').format(value);
 const cityName = city => city === 'ceuta' ? 'Ceuta' : 'Cádiz';
 const typeName = type => ({ comparsa: 'Comparsa', chirigota: 'Chirigota', coro: 'Coro', cuarteto: 'Cuarteto' }[type] || 'Modalidad pendiente');
 const photoLabel = photo => photo.named ? `Montse con ${photo.name}` : photo.name;
+const groupLabel = group => group.isEvent ? 'Encuentros en eventos' : group.name;
+const alphabetic = new Intl.Collator('es', { sensitivity: 'base', numeric: true, ignorePunctuation: true });
 const PAGE_SIZE = 12;
 const CATEGORIES = [['all', 'Todo el archivo'], ['comparsa', 'Comparsas'], ['chirigota', 'Chirigotas'], ['coro', 'Coros'], ['cuarteto', 'Cuartetos'], ['unknown', 'Por clasificar']];
-const state = { city: 'all', year: 'all', type: 'all', query: '', sort: 'recent', page: 1 };
+const state = { city: 'all', year: 'all', type: 'all', query: '', member: '', page: 1 };
 let catalogue, groups, currentGroup, currentPhotos = [], currentPhotoIndex = 0;
 let searchTimer, toastTimer, lastFocus;
+let members = [], membersByKey = new Map(), memberDraft = '', memberSuggestions = [], activeMemberIndex = -1;
 const groupDialog = $('#group-dialog');
 const photoDialog = $('#photo-dialog');
 const aboutDialog = $('#about-dialog');
@@ -25,7 +28,9 @@ function readURL() {
   const year = params.get('ano');
   state.year = year === 'unknown' || groups.some(group => String(group.year) === year) ? year : 'all';
   state.query = (params.get('q') || '').slice(0, 200);
-  state.sort = ['recent', 'oldest', 'az', 'photos'].includes(params.get('orden')) ? params.get('orden') : 'recent';
+  const memberValue = (params.get('integrante') || '').slice(0, 200);
+  state.member = normalize(memberValue);
+  memberDraft = membersByKey.get(state.member)?.name || memberValue;
   state.page = Math.max(1, parseInt(params.get('pagina'), 10) || 1);
   syncControls();
 }
@@ -36,7 +41,7 @@ function updateURL() {
   if (state.year !== 'all') params.set('ano', state.year);
   if (state.type !== 'all') params.set('modalidad', state.type);
   if (state.query) params.set('q', state.query);
-  if (state.sort !== 'recent') params.set('orden', state.sort);
+  if (state.member) params.set('integrante', membersByKey.get(state.member)?.name || state.member);
   if (state.page > 1) params.set('pagina', String(state.page));
   const query = params.size ? `?${params}` : '';
   history.replaceState(history.state, '', `${location.pathname}${query}${location.hash}`);
@@ -52,15 +57,17 @@ function syncControls() {
   }
   $('#year-filter').value = state.year;
   if ($('#search').value !== state.query) $('#search').value = state.query;
-  $('#sort').value = state.sort;
+  if ($('#member-search').value !== memberDraft) $('#member-search').value = memberDraft;
+  $('#clear-member').hidden = !memberDraft && !state.member;
   $('#reset-filters').hidden = !hasFilters();
 }
 
 function hasFilters() {
-  return state.city !== 'all' || state.year !== 'all' || state.type !== 'all' || Boolean(state.query);
+  return state.city !== 'all' || state.year !== 'all' || state.type !== 'all' || Boolean(state.query) || Boolean(state.member);
 }
 
 function groupPassesFilters(group, filters = state) {
+  if (filters.member && !membersByKey.get(filters.member)?.byGroup.has(group.id)) return false;
   if (filters.city !== 'all' && group.city !== filters.city) return false;
   if (filters.year === 'unknown' && group.year) return false;
   if (filters.year !== 'all' && filters.year !== 'unknown' && String(group.year) !== filters.year) return false;
@@ -70,17 +77,136 @@ function groupPassesFilters(group, filters = state) {
 }
 
 function groupMatchesQuery(group, query) {
-  return normalize(group.isEvent ? 'Encuentros en eventos' : group.name).includes(query);
+  return normalize(groupLabel(group)).includes(query);
 }
 
 function compareGroups(a, b) {
-  if (a.isEvent !== b.isEvent) return a.isEvent ? 1 : -1;
-  if (state.sort === 'az') return a.name.localeCompare(b.name, 'es');
-  if (state.sort === 'photos') return b.photos.length - a.photos.length || a.name.localeCompare(b.name, 'es');
-  if (!a.year && b.year) return 1;
-  if (a.year && !b.year) return -1;
-  const delta = (a.year || 0) - (b.year || 0);
-  return (state.sort === 'oldest' ? delta : -delta) || a.name.localeCompare(b.name, 'es');
+  return alphabetic.compare(groupLabel(a), groupLabel(b)) || alphabetic.compare(a.id, b.id);
+}
+
+function buildMemberIndex() {
+  const labels = new Map();
+  for (const group of groups) for (const photo of group.photos) {
+    if (!photo.named) continue;
+    const key = normalize(photo.name);
+    if (!key) continue;
+    const name = photo.name.replace(/\s+/g, ' ').trim();
+    const previous = labels.get(key);
+    // Keep accent-insensitive matching, with the accented source label for display.
+    if (!previous || (name.normalize('NFD').match(/[\u0300-\u036f]/g) || []).length > (previous.normalize('NFD').match(/[\u0300-\u036f]/g) || []).length) labels.set(key, name);
+  }
+  const resolved = new Map();
+  const ambiguous = new Set(['jose luis antonio']);
+  function labelMembers(key) {
+    if (resolved.has(key)) return resolved.get(key);
+    const words = key.split(' ');
+    // Two-word labels can be first name + surname. Preserve uncertain labels.
+    if (words.length < 3 || ambiguous.has(key)) { resolved.set(key, [key]); return [key]; }
+    const memo = new Map();
+    function partition(start) {
+      if (start === words.length) return [];
+      if (memo.has(start)) return memo.get(start);
+      let best = null;
+      for (let end = words.length; end > start; end--) {
+        const part = words.slice(start, end).join(' ');
+        if (part === key || !labels.has(part)) continue;
+        const tail = partition(end);
+        if (tail !== null && (best === null || tail.length + 1 < best.length)) best = [part, ...tail];
+      }
+      memo.set(start, best);
+      return best;
+    }
+    const parts = partition(0);
+    const result = parts?.length > 1 ? [...new Set(parts.flatMap(labelMembers))] : [key];
+    resolved.set(key, result);
+    return result;
+  }
+  membersByKey = new Map();
+  for (const group of groups) for (const photo of group.photos) {
+    if (!photo.named || !normalize(photo.name)) continue;
+    for (const key of labelMembers(normalize(photo.name))) {
+      if (!membersByKey.has(key)) membersByKey.set(key, { key, name: labels.get(key), byGroup: new Map(), photos: new Set(), cities: new Set(), groups: 0, events: 0 });
+      const member = membersByKey.get(key);
+      if (!member.byGroup.has(group.id)) {
+        member.byGroup.set(group.id, new Set());
+        if (group.isEvent) member.events++; else member.groups++;
+      }
+      member.byGroup.get(group.id).add(photo.id);
+      member.photos.add(photo.id);
+      member.cities.add(group.city);
+    }
+  }
+  members = [...membersByKey.values()].sort((a, b) => alphabetic.compare(a.name, b.name));
+}
+
+function closeMemberSuggestions() {
+  $('#member-suggestions').hidden = true;
+  $('#member-search').setAttribute('aria-expanded', 'false');
+  $('#member-search').removeAttribute('aria-activedescendant');
+  activeMemberIndex = -1;
+}
+
+function positionMemberSuggestions() {
+  const popup = $('#member-suggestions');
+  if (popup.hidden) return;
+  const list = $('#member-options');
+  list.style.removeProperty('max-height');
+  const field = $('#member-filter').getBoundingClientRect();
+  const viewport = window.visualViewport;
+  const top = (viewport?.offsetTop || 0) + 12;
+  const bottom = (viewport?.offsetTop || 0) + (viewport?.height || innerHeight) - 12;
+  const above = field.top - top - 6;
+  const below = bottom - field.bottom - 6;
+  const opensUp = below < popup.offsetHeight && above > below;
+  popup.classList.toggle('opens-up', opensUp);
+  const available = opensUp ? above : below;
+  const chromeHeight = popup.offsetHeight - list.offsetHeight;
+  list.style.maxHeight = `${Math.max(48, Math.min(list.offsetHeight, available - chromeHeight))}px`;
+}
+
+function highlightMember(index) {
+  if (!memberSuggestions.length) return;
+  activeMemberIndex = (index + memberSuggestions.length) % memberSuggestions.length;
+  $$('#member-options [role="option"]').forEach((option, optionIndex) => option.setAttribute('aria-selected', String(optionIndex === activeMemberIndex)));
+  const option = $(`#member-option-${activeMemberIndex}`);
+  $('#member-search').setAttribute('aria-activedescendant', option.id);
+  option.scrollIntoView({ block: 'nearest' });
+}
+
+function updateMemberSuggestions() {
+  const query = normalize(memberDraft);
+  if (!query) { closeMemberSuggestions(); return; }
+  const terms = query.split(' ');
+  const rank = member => member.key === query ? 0 : member.key.startsWith(query) ? 1 : 2;
+  const matches = members.filter(member => terms.every(term => member.key.includes(term))).sort((a, b) => rank(a) - rank(b) || alphabetic.compare(a.name, b.name));
+  memberSuggestions = matches.slice(0, 12);
+  activeMemberIndex = -1;
+  $('#member-options').innerHTML = memberSuggestions.map((member, index) => `<li role="option" tabindex="-1" aria-selected="false" id="member-option-${index}" data-member-option="${escapeHTML(member.key)}"><span class="member-name">${escapeHTML(member.name)}</span><span class="member-totals">${member.groups} ${member.groups === 1 ? 'agrupación' : 'agrupaciones'}${member.events ? ` · ${member.events} álbum de eventos` : ''} · ${member.photos.size} ${member.photos.size === 1 ? 'foto' : 'fotos'}</span><span class="member-city">${[...member.cities].map(cityName).join(' · ')}</span></li>`).join('');
+  $('#member-suggestion-status').textContent = !matches.length ? 'No hay nombres que coincidan en el álbum.' : matches.length > 12 ? `12 de ${matches.length} nombres. Escribe algo más para concretar.` : 'Selecciona un nombre. Se combinará con los demás filtros.';
+  $('#member-suggestions').hidden = false;
+  $('#member-search').setAttribute('aria-expanded', 'true');
+  $('#member-search').removeAttribute('aria-activedescendant');
+  positionMemberSuggestions();
+}
+
+function selectMember(key) {
+  const member = membersByKey.get(key);
+  if (!member) return;
+  memberDraft = member.name;
+  state.member = key;
+  state.page = 1;
+  render();
+  $('#member-search').focus({ preventScroll: true });
+  closeMemberSuggestions();
+}
+
+function clearMember() {
+  memberDraft = '';
+  state.member = '';
+  state.page = 1;
+  render();
+  closeMemberSuggestions();
+  $('#member-search').focus({ preventScroll: true });
 }
 
 function matchingGroups(overrides = {}) {
@@ -127,12 +253,14 @@ function updateFacets() {
 }
 
 function groupCard(group) {
-  const name = group.isEvent ? 'Encuentros en eventos' : group.name;
+  const name = groupLabel(group);
   const image = group.cover || group.photos[0];
   const imageClass = group.cover ? (image.height > image.width * 0.9 ? 'poster' : '') : 'personal';
   const names = [...new Set(group.photos.filter(photo => photo.named).map(photo => photo.name))];
-  const preview = names.length ? `Con ${names.slice(0, 2).join(' · ')}${names.length > 2 ? '…' : ''}` : 'Encuentros conservados en mi álbum.';
-  return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" data-photos="${group.photos.length}" data-covers="${Number(Boolean(group.cover))}" aria-label="Abrir ${escapeHTML(name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}, ${group.photos.length} fotografías y ${Number(Boolean(group.cover))} portada">
+  const selectedMember = membersByKey.get(state.member);
+  const memberPhotoCount = selectedMember?.byGroup.get(group.id)?.size || 0;
+  const preview = selectedMember ? `Con ${selectedMember.name} · ${memberPhotoCount} ${memberPhotoCount === 1 ? 'fotografía' : 'fotografías'}` : names.length ? `Con ${names.slice(0, 2).join(' · ')}${names.length > 2 ? '…' : ''}` : 'Encuentros conservados en mi álbum.';
+  return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" data-photos="${group.photos.length}" data-member-photos="${memberPhotoCount}" data-covers="${Number(Boolean(group.cover))}" aria-label="Abrir ${escapeHTML(name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}, ${group.photos.length} fotografías y ${Number(Boolean(group.cover))} portada">
     <div class="card-topline"><span>${cityName(group.city)}</span><span class="card-year">${group.isEvent ? 'Encuentros' : group.year || 'Año por confirmar'}</span></div>
     <div class="card-image-wrap"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async"><span class="card-image-label">${group.cover ? 'El tipo de aquel carnaval' : 'Una fotografía de mi álbum'}</span></div>
     <div class="card-info"><div class="card-type">${escapeHTML(group.isEvent ? 'Álbum de encuentros' : group.type ? typeName(group.type) : 'Modalidad por confirmar')}</div><h3>${escapeHTML(name)}</h3><p class="card-people">${escapeHTML(preview)}</p><div class="card-counts"><div class="card-photo-count"><strong>${number(group.photos.length)}</strong><span>fotografías del álbum</span></div><div class="card-cover-count"><strong>${group.cover ? '1' : '—'}</strong><span>${group.cover ? 'portada' : 'sin portada aparte'}</span></div></div><span class="card-cta">Abrir el álbum ${icon('arrow')}</span></div>
@@ -176,13 +304,16 @@ function renderPagination(pages) {
 
 function setFilter(key, value) {
   clearTimeout(searchTimer);
+  if (document.activeElement !== $('#member-search')) closeMemberSuggestions();
   state[key] = value;
   state.page = 1;
   render();
 }
 
 function resetFilters() {
-  Object.assign(state, { city: 'all', year: 'all', type: 'all', query: '', page: 1 });
+  Object.assign(state, { city: 'all', year: 'all', type: 'all', query: '', member: '', page: 1 });
+  memberDraft = '';
+  closeMemberSuggestions();
   render();
 }
 
@@ -369,7 +500,38 @@ function setupEvents() {
     searchTimer = setTimeout(() => setFilter('query', state.query), 150);
   });
   $('#year-filter').addEventListener('change', event => setFilter('year', event.target.value));
-  $('#sort').addEventListener('change', event => setFilter('sort', event.target.value));
+  const memberInput = $('#member-search');
+  memberInput.addEventListener('input', event => {
+    memberDraft = event.target.value;
+    if (state.member) { state.member = ''; state.page = 1; render(); }
+    $('#clear-member').hidden = !memberDraft;
+    updateMemberSuggestions();
+  });
+  memberInput.addEventListener('focus', () => { if (memberDraft) updateMemberSuggestions(); });
+  memberInput.addEventListener('keydown', event => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      if ($('#member-suggestions').hidden) updateMemberSuggestions();
+      highlightMember(activeMemberIndex < 0 ? (event.key === 'ArrowDown' ? 0 : memberSuggestions.length - 1) : activeMemberIndex + (event.key === 'ArrowDown' ? 1 : -1));
+    } else if (event.key === 'Enter') {
+      if (!$('#member-suggestions').hidden && memberSuggestions.length) {
+        event.preventDefault();
+        selectMember(memberSuggestions[activeMemberIndex < 0 ? 0 : activeMemberIndex].key);
+      }
+    } else if (event.key === 'Escape' && !$('#member-suggestions').hidden) {
+      event.preventDefault();
+      event.stopPropagation();
+      closeMemberSuggestions();
+    } else if (event.key === 'Tab') closeMemberSuggestions();
+  });
+  $('#member-options').addEventListener('mousedown', event => event.preventDefault());
+  $('#member-options').addEventListener('click', event => {
+    const option = event.target.closest('[data-member-option]');
+    if (option) selectMember(option.dataset.memberOption);
+  });
+  $('#member-filter').addEventListener('focusout', event => { if (!event.currentTarget.contains(event.relatedTarget)) closeMemberSuggestions(); });
+  document.addEventListener('pointerdown', event => { if (!$('#member-filter').contains(event.target)) closeMemberSuggestions(); });
+  $('#clear-member').addEventListener('click', clearMember);
   $('#reset-filters').addEventListener('click', resetFilters);
   $('#close-group').addEventListener('click', closeGroup);
   groupDialog.addEventListener('cancel', event => { event.preventDefault(); closeGroup(); });
@@ -408,6 +570,10 @@ function setupEvents() {
   window.addEventListener('popstate', () => { readURL(); render(); openFromHash(); if (!groupDialog.open) restoreGroupFocus(); });
   window.addEventListener('hashchange', openFromHash);
   window.addEventListener('resize', fitPhotograph);
+  window.addEventListener('resize', positionMemberSuggestions);
+  window.addEventListener('scroll', positionMemberSuggestions, { passive: true });
+  window.visualViewport?.addEventListener('resize', positionMemberSuggestions);
+  window.visualViewport?.addEventListener('scroll', positionMemberSuggestions);
 }
 
 async function initialize() {
@@ -416,6 +582,7 @@ async function initialize() {
     if (!response.ok) throw new Error('Catalogue not available');
     catalogue = await response.json();
     groups = catalogue.groups;
+    buildMemberIndex();
     renderCollection();
     readURL();
     setupEvents();

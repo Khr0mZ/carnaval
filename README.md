@@ -11,6 +11,8 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 ## La colección
 
 - Navegación por ciudad, año y modalidad; filtros combinables y búsqueda de agrupaciones sin distinguir tildes.
+- Agrupaciones siempre en orden alfabético español, en todas las páginas y filtros. No hay selector de orden.
+- Autocompletado de integrantes por nombre o apodo, con cifras de agrupaciones y fotos. Permite teclado, selección táctil, limpieza del filtro y enlaces con `integrante=`. Se combina con los demás filtros y devuelve fichas de agrupaciones, no una vista global de fotos.
 - Fichas con portada, álbum de encuentros y nombres de las fotografías.
 - Recuentos de agrupaciones y fotografías por modalidad, ciudad y año, ajustados a los demás filtros y la búsqueda. Las fotografías del álbum se cuentan por separado de las portadas.
 - Tarjetas con ciudad, edición, modalidad, nombres presentes en el álbum y cantidades de fotografías y portadas.
@@ -21,6 +23,8 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 - Enlaces a las fichas, con filtros conservados en la dirección.
 
 El año corresponde a la agrupación, no a la fecha de la fotografía. Los datos desconocidos quedan sin fechar o por clasificar. No se deducen años de fechas de archivos ni se inventan modalidades. Las fotos sin nombre de integrante conservan una descripción genérica.
+
+El índice de integrantes se construye a partir de las etiquetas de las fotos del álbum; no es una plantilla oficial o completa de cada agrupación. Se normalizan mayúsculas y tildes. Las etiquetas colectivas se separan cuando pueden reconocerse nombres ya guardados individualmente; las ambiguas se conservan. No se unifican apodos distintos sin verificar. Las cifras del autocompletado corresponden al archivo completo; al seleccionar un nombre se aplican también la ciudad, el año y la modalidad activos. Las tarjetas distinguen las fotos con ese nombre del total de fotografías de su álbum.
 
 ## Añadir fotografías o completar datos
 
