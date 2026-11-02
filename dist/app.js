@@ -10,12 +10,11 @@ const cityName = city => city === 'ceuta' ? 'Ceuta' : 'Cádiz';
 const typeName = type => ({ comparsa: 'Comparsa', chirigota: 'Chirigota', coro: 'Coro', cuarteto: 'Cuarteto' }[type] || 'Modalidad pendiente');
 const photoLabel = photo => photo.named ? `Montse con ${photo.name}` : photo.name;
 const PAGE_SIZE = 12;
-const state = { city: 'all', year: 'all', type: 'all', query: '', sort: 'recent', view: 'groups', page: 1 };
-let catalogue, groups, photoRecords, currentGroup, currentPhotos = [], currentPhotoIndex = 0;
+const state = { city: 'all', year: 'all', type: 'all', query: '', sort: 'recent', page: 1 };
+let catalogue, groups, currentGroup, currentPhotos = [], currentPhotoIndex = 0;
 let searchTimer, toastTimer, lastFocus;
 const groupDialog = $('#group-dialog');
 const photoDialog = $('#photo-dialog');
-const aboutDialog = $('#about-dialog');
 
 function readURL() {
   const params = new URLSearchParams(location.search);
@@ -25,7 +24,6 @@ function readURL() {
   state.year = year === 'unknown' || groups.some(group => String(group.year) === year) ? year : 'all';
   state.query = (params.get('q') || '').slice(0, 200);
   state.sort = ['recent', 'oldest', 'az', 'photos'].includes(params.get('orden')) ? params.get('orden') : 'recent';
-  state.view = params.get('vista') === 'photos' ? 'photos' : 'groups';
   state.page = Math.max(1, parseInt(params.get('pagina'), 10) || 1);
   syncControls();
 }
@@ -37,14 +35,13 @@ function updateURL() {
   if (state.type !== 'all') params.set('modalidad', state.type);
   if (state.query) params.set('q', state.query);
   if (state.sort !== 'recent') params.set('orden', state.sort);
-  if (state.view !== 'groups') params.set('vista', state.view);
   if (state.page > 1) params.set('pagina', String(state.page));
   const query = params.size ? `?${params}` : '';
   history.replaceState(history.state, '', `${location.pathname}${query}${location.hash}`);
 }
 
 function syncControls() {
-  for (const [attribute, value] of [['city', state.city], ['view', state.view]]) {
+  for (const [attribute, value] of [['city', state.city]]) {
     $$(`[data-${attribute}]`).forEach(button => {
       const active = button.dataset[attribute] === value;
       button.classList.toggle('active', active);
@@ -72,10 +69,11 @@ function groupPassesFilters(group) {
 }
 
 function groupMatchesQuery(group, query) {
-  return normalize(group.name).includes(query) || group.photos.some(photo => normalize(photo.name).includes(query));
+  return normalize(group.isEvent ? 'Encuentros en eventos' : group.name).includes(query);
 }
 
 function compareGroups(a, b) {
+  if (a.isEvent !== b.isEvent) return a.isEvent ? 1 : -1;
   if (state.sort === 'az') return a.name.localeCompare(b.name, 'es');
   if (state.sort === 'photos') return b.photos.length - a.photos.length || a.name.localeCompare(b.name, 'es');
   if (!a.year && b.year) return 1;
@@ -86,27 +84,17 @@ function compareGroups(a, b) {
 
 function getResults() {
   const query = normalize(state.query);
-  if (state.view === 'groups') {
-    return groups.filter(group => !group.isEvent && groupPassesFilters(group) && (!query || groupMatchesQuery(group, query))).sort(compareGroups);
-  }
-  return photoRecords.filter(({ group, photo }) => groupPassesFilters(group) && (!query || normalize(group.name).includes(query) || normalize(photo.name).includes(query)))
-    .sort((a, b) => state.sort === 'az' ? a.photo.name.localeCompare(b.photo.name, 'es') : compareGroups(a.group, b.group));
+  return groups.filter(group => (!group.isEvent || (state.year === 'all' && state.type === 'all')) && groupPassesFilters(group) && (!query || groupMatchesQuery(group, query))).sort(compareGroups);
 }
 
 function groupCard(group) {
+  const name = group.isEvent ? 'Encuentros en eventos' : group.name;
   const image = group.cover || group.photos[0];
   const imageClass = group.cover ? (image.height > image.width * 0.9 ? 'poster' : '') : 'personal';
-  return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" aria-label="Abrir ${escapeHTML(group.name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}">
+  return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" aria-label="Abrir ${escapeHTML(name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}">
     <div class="card-image-wrap"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async">
-    <span class="card-year ${group.year ? '' : 'undated'}">${group.year || 'Sin fechar'}</span>${!group.cover ? '<span class="card-remember">Mi recuerdo</span>' : ''}<span class="card-city">${icon('pin')}${cityName(group.city)}</span></div>
-    <div class="card-info"><div class="card-type" data-modality="${group.type || 'unknown'}"><span class="type-dot"></span>${escapeHTML(group.type ? typeName(group.type) : 'Por clasificar')}</div><h3>${escapeHTML(group.name)}</h3><div class="card-meta"><span>${icon('camera')}${group.photos.length} ${group.photos.length === 1 ? 'foto' : 'fotos'}</span>${icon('arrow')}</div></div>
-  </button></article>`;
-}
-
-function photoCard({ group, photo }) {
-  return `<article class="group-card photo-card"><button type="button" class="card-open" data-open-photo="${photo.id}" aria-label="Ver ${escapeHTML(photoLabel(photo))}">
-    <div class="card-image-wrap"><img class="card-image personal" src="${photo.thumb}" width="${photo.width}" height="${photo.height}" alt="${escapeHTML(photoLabel(photo))}" loading="lazy" decoding="async"><span class="card-city">${icon('pin')}${cityName(group.city)}</span></div>
-    <div class="card-info"><div class="card-type">${photo.named ? 'En la foto con' : 'En mi álbum'}</div><h3>${escapeHTML(photo.name)}</h3><div class="card-meta"><span>${escapeHTML(group.isEvent ? 'Por los eventos' : group.name)}${group.year ? ' · ' + group.year : ''}</span>${icon('arrow')}</div></div>
+    <span class="card-year ${group.year ? '' : 'undated'}">${group.isEvent ? 'Álbum' : group.year || 'Sin fechar'}</span>${!group.cover && !group.isEvent ? '<span class="card-remember">Mi recuerdo</span>' : ''}<span class="card-city">${icon('pin')}${cityName(group.city)}</span></div>
+    <div class="card-info"><div class="card-type" data-modality="${group.type || 'unknown'}"><span class="type-dot"></span>${escapeHTML(group.isEvent ? 'Álbum de encuentros' : group.type ? typeName(group.type) : 'Por clasificar')}</div><h3>${escapeHTML(name)}</h3><div class="card-meta"><span>${icon('camera')}${group.photos.length} ${group.photos.length === 1 ? 'foto' : 'fotos'}</span>${icon('arrow')}</div></div>
   </button></article>`;
 }
 
@@ -116,12 +104,12 @@ function render() {
   state.page = Math.min(state.page, pages);
   const start = (state.page - 1) * PAGE_SIZE;
   const count = results.length;
-  const noun = state.view === 'groups' ? (count === 1 ? 'agrupación' : 'agrupaciones') : (count === 1 ? 'foto' : 'fotos');
-  $('#results-count').innerHTML = `<strong>${number(count)} ${noun}</strong>${count ? ` <span>· ${start + 1}–${Math.min(start + PAGE_SIZE, count)}</span>` : ''}${state.city !== 'all' ? ` en ${cityName(state.city)}` : ''}`;
+  const groupCount = results.filter(group => !group.isEvent).length;
+  const eventCount = count - groupCount;
+  const summary = [groupCount || !eventCount ? `${number(groupCount)} ${groupCount === 1 ? 'agrupación' : 'agrupaciones'}` : '', eventCount ? `${eventCount} álbum de eventos` : ''].filter(Boolean).join(' · ');
+  $('#results-count').innerHTML = `<strong>${summary}</strong>${count ? ` <span>· ${start + 1}–${Math.min(start + PAGE_SIZE, count)}</span>` : ''}${state.city !== 'all' ? ` en ${cityName(state.city)}` : ''}`;
   const grid = $('#catalog-grid');
-  grid.classList.toggle('photos-grid', state.view === 'photos');
-  grid.innerHTML = count ? results.slice(start, start + PAGE_SIZE).map(state.view === 'groups' ? groupCard : photoCard).join('') : `<div class="empty-state">${icon('search')}<h3>¡Esa no la encuentro!</h3><p>Prueba con otro nombre o quita algún filtro.</p><button type="button" data-reset>Ver toda la colección ${icon('arrow')}</button></div>`;
-  $('#results-hint').textContent = state.view === 'groups' ? 'Abre una agrupación y mira nuestras fotos.' : 'Abre una foto y pásate por el álbum.';
+  grid.innerHTML = count ? results.slice(start, start + PAGE_SIZE).map(groupCard).join('') : `<div class="empty-state">${icon('search')}<h3>¡Esa no la encuentro!</h3><p>Prueba con otro nombre o quita algún filtro.</p><button type="button" data-reset>Ver toda la colección ${icon('arrow')}</button></div>`;
   renderPagination(pages);
   syncControls();
   updateURL();
@@ -161,8 +149,6 @@ function renderCollection() {
   const stats = catalogue.stats;
   $('#stat-groups').textContent = number(stats.groups);
   $('#stat-photos').textContent = number(stats.photos);
-  $('#view-group-count').textContent = number(stats.groups);
-  $('#view-photo-count').textContent = number(stats.photos);
   const years = [...new Set(groups.map(group => group.year).filter(Boolean))].sort((a, b) => b - a);
   $('#year-filter').innerHTML = '<option value="all">Todos</option>' + years.map(year => `<option value="${year}">${year}</option>`).join('') + '<option value="unknown">Sin fechar</option>';
 }
@@ -189,9 +175,8 @@ function openGroup(id, writeHash = true) {
 
 function restoreGroupFocus() {
   const target = lastFocus?.isConnected && lastFocus !== document.body ? lastFocus
-    : lastFocus?.dataset.openPhoto ? $$('[data-open-photo]').find(button => button.dataset.openPhoto === lastFocus.dataset.openPhoto)
     : $$('[data-open-group]').find(button => button.dataset.openGroup === currentGroup?.id);
-  (target || $('[data-view].active'))?.focus({ preventScroll: true });
+  (target || $('#search'))?.focus({ preventScroll: true });
 }
 
 function closeGroup() {
@@ -216,14 +201,11 @@ function openPhotoList(records, index) {
   $('#close-photo').focus({ preventScroll: true });
 }
 
-function openPhotoById(id, album = false) {
-  const records = album && currentGroup ? currentGroup.photos.map(photo => ({ group: currentGroup, photo })) : (state.view === 'photos' ? getResults() : photoRecords);
-  let index = records.findIndex(record => record.photo.id === id);
+function openPhotoById(id) {
+  if (!currentGroup || !groupDialog.open) return;
+  const records = currentGroup.photos.map(photo => ({ group: currentGroup, photo }));
+  const index = records.findIndex(record => record.photo.id === id);
   if (index >= 0) openPhotoList(records, index);
-  else {
-    index = photoRecords.findIndex(record => record.photo.id === id);
-    if (index >= 0) openPhotoList(photoRecords, index);
-  }
 }
 
 function updatePhoto() {
@@ -236,8 +218,6 @@ function updatePhoto() {
   $('#photo-position').textContent = `${currentPhotoIndex + 1} / ${currentPhotos.length}`;
   $('#photo-caption').textContent = cover ? group.name : photoLabel(photo);
   $('#photo-context').textContent = `${group.isEvent ? 'Encuentros en eventos' : group.name} · ${cityName(group.city)}${group.year ? ` · Agrupación de ${group.year}` : ' · Año por confirmar'}${cover ? ' · Portada' : ''}`;
-  $('#photo-group-link').hidden = groupDialog.open || Boolean(cover);
-  $('#photo-group-label').textContent = group.isEvent ? 'Ver este álbum' : 'Ver agrupación';
   $('#photo-prev').disabled = currentPhotoIndex === 0;
   $('#photo-next').disabled = currentPhotoIndex === currentPhotos.length - 1;
   for (const offset of [-1, 1]) {
@@ -257,7 +237,7 @@ function movePhoto(delta) {
 function toast(message) {
   clearTimeout(toastTimer);
   const element = $('#toast');
-  const host = photoDialog.open ? photoDialog : groupDialog.open ? groupDialog : aboutDialog.open ? aboutDialog : document.body;
+  const host = photoDialog.open ? photoDialog : groupDialog.open ? groupDialog : document.body;
   host.append(element);
   element.textContent = message;
   element.classList.add('visible');
@@ -308,15 +288,13 @@ function setupEvents() {
     const button = event.target.closest('button');
     if (!button || button.disabled) return;
     if (button.hasAttribute('data-city')) setFilter('city', button.dataset.city);
-    else if (button.hasAttribute('data-view')) setFilter('view', button.dataset.view);
     else if (button.hasAttribute('data-page')) {
       state.page = Number(button.dataset.page);
       render();
       $('.results-bar').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (button.hasAttribute('data-reset')) resetFilters();
     else if (button.hasAttribute('data-open-group')) openGroup(button.dataset.openGroup);
-    else if (button.hasAttribute('data-open-photo')) openPhotoById(button.dataset.openPhoto);
-    else if (button.hasAttribute('data-album-photo')) openPhotoById(button.dataset.albumPhoto, true);
+    else if (button.hasAttribute('data-album-photo')) openPhotoById(button.dataset.albumPhoto);
     else if (button.hasAttribute('data-cover') && currentGroup?.cover) openPhotoList([{ group: currentGroup, photo: currentGroup.cover, cover: true }], 0);
     else if (button.id === 'share-group') shareGroup();
   });
@@ -332,25 +310,17 @@ function setupEvents() {
   $('#close-group').addEventListener('click', closeGroup);
   groupDialog.addEventListener('cancel', event => { event.preventDefault(); closeGroup(); });
   $('#close-photo').addEventListener('click', () => photoDialog.close());
-  $('#photo-group-link').addEventListener('click', () => {
-    const record = currentPhotos[currentPhotoIndex];
-    if (record) { photoDialog.close(); openGroup(record.group.id); }
-  });
   $('#photo-prev').addEventListener('click', () => movePhoto(-1));
   $('#photo-next').addEventListener('click', () => movePhoto(1));
-  $('#about-open').addEventListener('click', () => aboutDialog.showModal());
-  $('#close-about').addEventListener('click', () => aboutDialog.close());
-  for (const dialog of [groupDialog, aboutDialog]) dialog.addEventListener('click', event => {
-    const rect = dialog.getBoundingClientRect();
-    if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) {
-      if (dialog === groupDialog) closeGroup(); else dialog.close();
-    }
+  groupDialog.addEventListener('click', event => {
+    const rect = groupDialog.getBoundingClientRect();
+    if (event.target === groupDialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closeGroup();
   });
   document.addEventListener('keydown', event => {
     if (photoDialog.open && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
       event.preventDefault();
       movePhoto(event.key === 'ArrowRight' ? 1 : -1);
-    } else if (event.key === '/' && !groupDialog.open && !aboutDialog.open && !photoDialog.open && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+    } else if (event.key === '/' && !groupDialog.open && !photoDialog.open && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
       event.preventDefault();
       $('#search').focus();
       $('#search').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -375,7 +345,6 @@ async function initialize() {
     if (!response.ok) throw new Error('Catalogue not available');
     catalogue = await response.json();
     groups = catalogue.groups;
-    photoRecords = groups.flatMap(group => group.photos.map(photo => ({ group, photo })));
     renderCollection();
     readURL();
     setupEvents();

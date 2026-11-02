@@ -7,3 +7,7 @@ The user explicitly rejected publishing to Sites without authorization. Do not c
 The user authorized making `Khr0mZ/carnaval` public and publishing this collection on GitHub Pages on 2026-11-02. Preserve that selected repository and audience in subsequent work unless instructed otherwise.
 
 Keep the original family photographs in `../_fuentes/` outside the repository. The optimized images in `dist/` are the website assets. Do not commit `.local/`, credentials, or archives.
+
+# Design and browsing
+
+The user wants a clean design without confetti or decorative SVG filler. Browse by grouping first, then open the group's album and its photos. Do not reintroduce a global photo view, an about/presentation panel, or scroll-only navigation buttons. Keep the Falla stage fixed behind the page.

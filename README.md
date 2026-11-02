@@ -10,9 +10,9 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 
 ## La colección
 
-- Navegación por ciudad, año y modalidad; filtros combinables y búsqueda de agrupaciones e integrantes sin distinguir tildes.
+- Navegación por ciudad, año y modalidad; filtros combinables y búsqueda de agrupaciones sin distinguir tildes.
 - Fichas con portada, álbum de encuentros y nombres de las fotografías.
-- Una sola colección con dos vistas: agrupaciones y fotos con Montse. Ciudad, búsqueda, año, modalidad y ordenación se controlan en el mismo sitio.
+- Un único recorrido: encontrar una agrupación, abrir su ficha y ver sus fotos. No hay una vista global de fotografías. El álbum de eventos de las fuentes conserva su propia entrada, identificada como álbum.
 - Paginación, enlaces directos y navegación atrás y adelante del navegador; las fichas tienen un botón de regreso siempre visible.
 - Visor de imágenes con teclado, gestos en móvil y cierre con Escape.
 - Enlaces a las fichas, con filtros conservados en la dirección.
@@ -34,6 +34,7 @@ Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles par
 - Prompt: «Interior del Gran Teatro Falla visto desde una butaca central hacia el escenario; arquitectura neomudéjar, palcos iluminados, terciopelo burdeos, dorado antiguo, butacas en primer plano y espacio central oscuro para la tipografía; composición simétrica, sin personas ni texto».
 - Tipografías: Rye para los títulos de cartel, Bricolage Grotesque para textos y controles, y Caveat para la firma y las notas. Distribuidas mediante Google Fonts y guardadas en el proyecto. Licencias en `dist/assets/fonts/`.
 - Las portadas y los encuentros proceden exclusivamente de la colección facilitada.
+- La página no usa confeti, SVG decorativos, panel de presentación ni botones cuyo único propósito sea hacer scroll. Se conservan los iconos funcionales de búsqueda, ubicación y navegación del visor.
 
 ## Publicación
 
