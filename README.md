@@ -1,6 +1,6 @@
-# El carnaval de Montse
+# Mi carnaval
 
-Enciclopedia personal entre Ceuta y Cádiz, con el escenario del Gran Teatro Falla fijo detrás de toda la colección. El diseño se inspira en los carteles de carnaval, con una tipografía expresiva y textos cercanos. HTML, CSS y JavaScript sin dependencias de ejecución ni servicios externos. Las tipografías están incluidas en el proyecto.
+Enciclopedia personal de Montse entre Ceuta y Cádiz, con el escenario del Gran Teatro Falla fijo detrás de toda la colección. El diseño se inspira en programas de mano y entradas de teatro, con papel marfil, dorado envejecido y un tono solemne y emotivo. HTML, CSS y JavaScript sin dependencias de ejecución ni servicios externos. Las tipografías están incluidas en el proyecto.
 
 ## Abrir en local
 
@@ -12,9 +12,12 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 
 - Navegación por ciudad, año y modalidad; filtros combinables y búsqueda de agrupaciones sin distinguir tildes.
 - Fichas con portada, álbum de encuentros y nombres de las fotografías.
+- Recuentos de agrupaciones y fotografías por modalidad, ciudad y año, ajustados a los demás filtros y la búsqueda. Las fotografías del álbum se cuentan por separado de las portadas.
+- Tarjetas con ciudad, edición, modalidad, nombres presentes en el álbum y cantidades de fotografías y portadas.
 - Un único recorrido: encontrar una agrupación, abrir su ficha y ver sus fotos. No hay una vista global de fotografías. El álbum de eventos de las fuentes conserva su propia entrada, identificada como álbum.
 - Paginación, enlaces directos y navegación atrás y adelante del navegador; las fichas tienen un botón de regreso siempre visible.
-- Visor de imágenes con teclado, gestos en móvil y cierre con Escape.
+- Visor con marco ajustado a cada fotografía, cartela de programa, navegación por teclado, gestos en móvil y cierre con Escape.
+- «Qué es esto» abre una carta de agradecimiento firmada por Montse.
 - Enlaces a las fichas, con filtros conservados en la dirección.
 
 El año corresponde a la agrupación, no a la fecha de la fotografía. Los datos desconocidos quedan sin fechar o por clasificar. No se deducen años de fechas de archivos ni se inventan modalidades. Las fotos sin nombre de integrante conservan una descripción genérica.
@@ -32,9 +35,9 @@ Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles par
 
 - Fondo: `dist/assets/teatro-falla.webp`, creado con la herramienta integrada de generación de imágenes. Es una recreación artística inspirada en el teatro, no una fotografía documental.
 - Prompt: «Interior del Gran Teatro Falla visto desde una butaca central hacia el escenario; arquitectura neomudéjar, palcos iluminados, terciopelo burdeos, dorado antiguo, butacas en primer plano y espacio central oscuro para la tipografía; composición simétrica, sin personas ni texto».
-- Tipografías: Rye para los títulos de cartel, Bricolage Grotesque para textos y controles, y Caveat para la firma y las notas. Distribuidas mediante Google Fonts y guardadas en el proyecto. Licencias en `dist/assets/fonts/`.
+- Tipografías: Cormorant Garamond para títulos y carta, Manrope para controles y datos, Rye para las modalidades y Caveat para la firma. Archivos guardados en el proyecto; licencias en `dist/assets/fonts/`.
 - Las portadas y los encuentros proceden exclusivamente de la colección facilitada.
-- La página no usa confeti, SVG decorativos, panel de presentación ni botones cuyo único propósito sea hacer scroll. Se conservan los iconos funcionales de búsqueda, ubicación y navegación del visor.
+- La página no usa confeti, SVG decorativos ni botones cuyo único propósito sea hacer scroll. Se conservan los iconos funcionales. El único panel explicativo es el agradecimiento solicitado por el usuario.
 
 ## Publicación
 

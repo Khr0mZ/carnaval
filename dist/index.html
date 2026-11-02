@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#2d1524">
-  <meta name="description" content="El carnaval que Montse ha vivido. Una enciclopedia personal de agrupaciones, fotografías y encuentros entre Ceuta y Cádiz.">
-  <meta property="og:title" content="El carnaval de Montse">
-  <meta property="og:description" content="¡Que siga el carnaval! Agrupaciones, fotos y buenos ratos con Montse entre Ceuta y Cádiz.">
-  <title>El carnaval de Montse · ¡Que siga el carnaval!</title>
+  <meta name="theme-color" content="#29131c">
+  <meta name="description" content="Mi carnaval. Los nombres, las voces y las fotografías que Montse conserva de tantos años de carnaval entre Ceuta y Cádiz.">
+  <meta property="og:title" content="Mi carnaval">
+  <meta property="og:description" content="Lo que canta el alma no lo borra el tiempo. Un álbum de recuerdos compartidos entre Ceuta y Cádiz, por Montse.">
+  <title>Mi carnaval · Los recuerdos que se quedan</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preload" as="image" href="assets/teatro-falla.webp" fetchpriority="high">
-  <link rel="stylesheet" href="fonts.css?v=2">
-  <link rel="stylesheet" href="styles.css?v=3">
-  <script src="app.js?v=3" defer></script>
+  <link rel="stylesheet" href="fonts.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <script src="app.js?v=4" defer></script>
 </head>
 <body>
   <div class="theatre-backdrop" aria-hidden="true"></div>
@@ -28,56 +28,72 @@
   </defs></svg>
 
   <header class="site-header" id="site-header">
-    <div class="brand" aria-label="El carnaval de Montse">
-      <span><span class="brand-small">EL CARNAVAL</span><span class="brand-name">de Montse</span></span>
+    <div class="brand" aria-label="Mi carnaval">
+      <span class="brand-name">Mi carnaval</span>
+      <span class="brand-small">EL ÁLBUM DE MONTSE</span>
     </div>
+    <button type="button" class="theatre-button about-open" id="about-open" aria-haspopup="dialog" aria-controls="about-dialog">Qué es esto</button>
   </header>
 
   <main>
     <section class="hero" id="inicio" aria-labelledby="hero-title">
       <div class="hero-content">
-        <div class="hero-ticket">CEUTA, CÁDIZ Y MUCHAS FOTOS</div>
-        <h1 id="hero-title">¡Que siga<br><span>el carnaval!</span></h1>
-        <p>Soy Montse. Me gusta el carnaval, seguir a mis agrupaciones<br class="desktop-break"> y llevarme una foto con su gente. Aquí están mis buenos ratos.</p>
-        <div class="hero-stats" aria-label="La colección en cifras"><span><strong id="stat-groups">—</strong> agrupaciones</span><span><strong id="stat-photos">—</strong> fotos</span><span><strong>2</strong> ciudades</span></div>
+        <div class="hero-ticket">CEUTA Y CÁDIZ · LOS AÑOS COMPARTIDOS</div>
+        <h1 id="hero-title">Lo que canta el alma,<br><em>no lo borra el tiempo.</em></h1>
+        <p>Hay voces que me devuelven a un febrero y fotografías en las que todavía escucho las risas.<br class="desktop-break"> Este es mi pequeño lugar para volver a todo lo que hemos vivido juntos.</p>
+        <div class="hero-stats" aria-label="La colección en cifras"><span><strong id="stat-groups">—</strong> agrupaciones</span><span><strong id="stat-photos">—</strong> fotografías del álbum</span><span>Ediciones <strong id="stat-first-year">—</strong>–<strong id="stat-last-year">—</strong></span></div>
       </div>
     </section>
 
     <section class="archive section-wrap" id="archivo" aria-labelledby="archive-title">
       <div class="section-heading">
-        <div><div class="eyebrow">MI ENCICLOPEDIA, A MI MANERA</div><h2 id="archive-title">Todo este <span>carnaval.</span></h2><p>Encuentra una agrupación y abre su álbum de fotos.</p></div>
+        <div><div class="eyebrow">PROGRAMA DE MIS RECUERDOS</div><h2 id="archive-title">Cada nombre, <em>un lugar en mi memoria.</em></h2><p>Las agrupaciones y las personas que han dado voz a todos estos años.</p></div>
       </div>
       <div class="explore-controls">
-       <div class="search-row">
         <div class="city-tabs" role="group" aria-label="Filtrar por ciudad">
-          <button type="button" class="city-tab active" data-city="all" aria-pressed="true">Todo</button>
-          <button type="button" class="city-tab" data-city="ceuta" aria-pressed="false">Ceuta</button>
-          <button type="button" class="city-tab" data-city="cadiz" aria-pressed="false">Cádiz</button>
+          <button type="button" class="city-tab active" data-city="all" aria-pressed="true"><span class="city-name"><span class="city-long">Las dos orillas</span><span class="city-short">Ambas</span></span><span class="city-count" data-city-count="all"></span></button>
+          <button type="button" class="city-tab" data-city="ceuta" aria-pressed="false"><span class="city-name">Ceuta</span><span class="city-count" data-city-count="ceuta"></span></button>
+          <button type="button" class="city-tab" data-city="cadiz" aria-pressed="false"><span class="city-name">Cádiz</span><span class="city-count" data-city-count="cadiz"></span></button>
         </div>
-        <label class="search-field"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">Buscar agrupación</span><input type="search" id="search" placeholder="Buscar agrupación…" autocomplete="off"><kbd aria-hidden="true">/</kbd></label>
-       </div>
+        <div class="category-heading"><span>Las modalidades</span><small>Fotografías disponibles en cada categoría</small></div>
+        <div class="category-tickets" id="category-tickets" role="group" aria-label="Filtrar por modalidad"></div>
        <div class="filter-row">
+        <label class="search-field"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">Buscar agrupación</span><input type="search" id="search" placeholder="El nombre de una agrupación…" autocomplete="off"><kbd aria-hidden="true">/</kbd></label>
         <label class="select-field"><span>Año</span><select id="year-filter" aria-label="Filtrar por año"><option value="all">Todos</option></select></label>
-        <label class="select-field"><span>Modalidad</span><select id="type-filter" aria-label="Filtrar por modalidad"><option value="all">Todas</option><option value="comparsa">Comparsas</option><option value="chirigota">Chirigotas</option><option value="coro">Coros</option><option value="cuarteto">Cuartetos</option><option value="unknown">Pendiente</option></select></label>
-        <label class="select-field sort-field"><span>Orden</span><select id="sort" aria-label="Ordenar resultados"><option value="recent">Recientes</option><option value="oldest">Antiguos</option><option value="az">A–Z</option><option value="photos">Más fotos</option></select></label>
-        <button class="reset-filters" id="reset-filters" type="button" hidden><svg class="icon"><use href="#i-close"/></svg> Quitar filtros</button>
+        <label class="select-field sort-field"><span>Orden del programa</span><select id="sort" aria-label="Ordenar resultados"><option value="recent">Más recientes</option><option value="oldest">Más antiguos</option><option value="az">Nombre A–Z</option><option value="photos">Más fotografías</option></select></label>
        </div>
+       <div class="filter-foot"><span>Las cifras cuentan las fotos del álbum; las portadas se indican aparte.</span><button class="reset-filters" id="reset-filters" type="button" hidden>Restablecer filtros</button></div>
       </div>
-      <div class="results-bar"><p id="results-count" role="status" aria-live="polite">Abriendo el álbum…</p><span id="results-hint">Abre una agrupación y mira nuestras fotos.</span></div>
+      <div class="results-bar"><p id="results-count" role="status" aria-live="polite">Abriendo el álbum…</p><span id="results-pages"></span></div>
       <div class="catalog-grid" id="catalog-grid" aria-label="Resultados de la enciclopedia"><div class="loading-state">Se está abriendo el telón…</div></div>
       <nav class="pagination" id="pagination" aria-label="Páginas de resultados"></nav>
-      <p class="archive-note">¿Algún año o nombre por completar? Poco a poco, que aquí todavía queda carnaval.</p>
+      <p class="archive-note">Algunos nombres y fechas esperan todavía su lugar. La memoria también se cuida poco a poco.</p>
     </section>
   </main>
 
-  <footer class="site-footer"><p>El carnaval de Montse <span>Ceuta · Cádiz</span></p><span class="footer-signature">Y que no falte una foto.</span></footer>
+  <footer class="site-footer"><p>Mi carnaval <span>Ceuta · Cádiz</span></p><span class="footer-signature">Por lo vivido. Y por lo que aún nos queda.</span></footer>
 
-  <dialog id="group-dialog" class="group-dialog" aria-labelledby="group-title"><div class="dialog-bar"><button class="dialog-back" id="close-group" type="button"><svg class="icon"><use href="#i-arrow"/></svg> Volver a la colección</button><span>EL CARNAVAL DE MONTSE</span></div><div id="group-content"></div></dialog>
+  <dialog id="group-dialog" class="group-dialog" aria-labelledby="group-title"><div class="dialog-bar"><button class="dialog-back theatre-button" id="close-group" type="button"><svg class="icon"><use href="#i-arrow"/></svg> Volver al programa</button><span>MI CARNAVAL</span></div><div id="group-content"></div></dialog>
   <dialog id="photo-dialog" class="photo-dialog" aria-label="Visor de fotografías">
-    <div class="lightbox-top"><button type="button" class="lightbox-close" id="close-photo"><svg class="icon"><use href="#i-arrow"/></svg> Volver</button><span id="photo-position"></span></div>
-    <button type="button" class="photo-prev photo-nav" id="photo-prev" aria-label="Fotografía anterior"><svg class="icon"><use href="#i-chevron"/></svg></button>
-    <figure class="lightbox-figure"><img id="lightbox-image" alt=""><figcaption><span id="photo-caption"></span><small id="photo-context"></small></figcaption></figure>
-    <button type="button" class="photo-next photo-nav" id="photo-next" aria-label="Fotografía siguiente"><svg class="icon"><use href="#i-chevron"/></svg></button>
+    <div class="lightbox-top"><span class="viewer-brand">Mi carnaval</span><span id="photo-position"></span><button type="button" class="lightbox-close theatre-button" id="close-photo"><svg class="icon"><use href="#i-arrow"/></svg> Volver al álbum</button></div>
+    <button type="button" class="photo-prev photo-nav theatre-button" id="photo-prev" aria-label="Fotografía anterior"><svg class="icon"><use href="#i-chevron"/></svg><span>Anterior</span></button>
+    <figure class="lightbox-figure"><div class="photo-mount"><img id="lightbox-image" alt=""></div><figcaption><span class="caption-eyebrow" id="photo-kind">UN RECUERDO COMPARTIDO</span><span id="photo-caption"></span><small id="photo-context"></small></figcaption></figure>
+    <button type="button" class="photo-next photo-nav theatre-button" id="photo-next" aria-label="Fotografía siguiente"><span>Siguiente</span><svg class="icon"><use href="#i-chevron"/></svg></button>
+  </dialog>
+  <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title">
+    <div class="letter-toolbar"><span>MI CARNAVAL</span><button type="button" class="letter-close theatre-button" id="close-about" aria-label="Cerrar agradecimiento">Cerrar <svg class="icon"><use href="#i-close"/></svg></button></div>
+    <article class="thank-you-letter">
+      <div class="eyebrow">A QUIENES FORMÁIS PARTE DE ESTA HISTORIA</div>
+      <h2 id="about-title">Gracias por <em>tanto carnaval.</em></h2>
+      <p class="letter-opening">A veces miro una de estas fotografías y el tiempo hace algo hermoso: se detiene.</p>
+      <p>Vuelvo a escuchar una copla, a sentir la emoción antes de que se abra el telón y a reconocer esa alegría que solo el carnaval sabe regalarnos. Y, por un instante, todos esos años vuelven a estar aquí, tan cerca que casi puedo tocarlos.</p>
+      <p>Esta página no quiere guardar solo nombres, años o tipos. Quiere guardaros a vosotros: a quienes habéis puesto voz a mi emoción, a quienes os habéis parado para compartir una fotografía y a quienes habéis caminado a mi lado durante tantos carnavales.</p>
+      <p>Gracias por cada copla que me ha hecho llorar, por cada risa que llegó sin avisar y por la paciencia con mi «una foto más». Gracias por convertir tantos febreros en un lugar al que siempre quiero volver.</p>
+      <p>Si alguna vez nos hemos encontrado en este carnaval, hay un pedacito vuestro aquí. Y si hemos compartido el camino, sabed que ninguno de estos recuerdos sería el mismo sin vosotros.</p>
+      <p>Que el tiempo pase. Que cambien los tipos y los repertorios. Ojalá sigamos reconociéndonos en una copla y encontrándonos después para hacernos otra foto.</p>
+      <div class="letter-signature"><span>Con todo mi cariño y mi gratitud,</span><strong>Montse</strong></div>
+      <p class="letter-postscript">Por lo vivido. Y por todo lo que aún nos queda por cantar.</p>
+    </article>
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p class="noscript">Activa JavaScript para explorar las agrupaciones y las fotografías de esta enciclopedia.</p></noscript>

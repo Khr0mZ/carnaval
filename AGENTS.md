@@ -10,4 +10,6 @@ Keep the original family photographs in `../_fuentes/` outside the repository. T
 
 # Design and browsing
 
-The user wants a clean design without confetti or decorative SVG filler. Browse by grouping first, then open the group's album and its photos. Do not reintroduce a global photo view, an about/presentation panel, or scroll-only navigation buttons. Keep the Falla stage fixed behind the page.
+The current name is "Mi carnaval". The user now prefers a solemn, very emotional tone and theatrical components inspired by carnival programmes and tickets. Keep the Falla stage fixed behind the page. Do not add confetti or random decorative SVGs.
+
+Browse by grouping first, then open the group's album and its photos. Do not reintroduce a global photo view or scroll-only navigation buttons. The user has explicitly requested the top-right "Qué es esto" button again, opening an emotional thank-you letter signed by Montse. Show accurate contextual photo counts by category and separate album photographs from covers.

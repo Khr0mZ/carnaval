@@ -10,11 +10,13 @@ const cityName = city => city === 'ceuta' ? 'Ceuta' : 'Cádiz';
 const typeName = type => ({ comparsa: 'Comparsa', chirigota: 'Chirigota', coro: 'Coro', cuarteto: 'Cuarteto' }[type] || 'Modalidad pendiente');
 const photoLabel = photo => photo.named ? `Montse con ${photo.name}` : photo.name;
 const PAGE_SIZE = 12;
+const CATEGORIES = [['all', 'Todo el archivo'], ['comparsa', 'Comparsas'], ['chirigota', 'Chirigotas'], ['coro', 'Coros'], ['cuarteto', 'Cuartetos'], ['unknown', 'Por clasificar']];
 const state = { city: 'all', year: 'all', type: 'all', query: '', sort: 'recent', page: 1 };
 let catalogue, groups, currentGroup, currentPhotos = [], currentPhotoIndex = 0;
 let searchTimer, toastTimer, lastFocus;
 const groupDialog = $('#group-dialog');
 const photoDialog = $('#photo-dialog');
+const aboutDialog = $('#about-dialog');
 
 function readURL() {
   const params = new URLSearchParams(location.search);
@@ -41,7 +43,7 @@ function updateURL() {
 }
 
 function syncControls() {
-  for (const [attribute, value] of [['city', state.city]]) {
+  for (const [attribute, value] of [['city', state.city], ['type', state.type]]) {
     $$(`[data-${attribute}]`).forEach(button => {
       const active = button.dataset[attribute] === value;
       button.classList.toggle('active', active);
@@ -49,7 +51,6 @@ function syncControls() {
     });
   }
   $('#year-filter').value = state.year;
-  $('#type-filter').value = state.type;
   if ($('#search').value !== state.query) $('#search').value = state.query;
   $('#sort').value = state.sort;
   $('#reset-filters').hidden = !hasFilters();
@@ -59,12 +60,12 @@ function hasFilters() {
   return state.city !== 'all' || state.year !== 'all' || state.type !== 'all' || Boolean(state.query);
 }
 
-function groupPassesFilters(group) {
-  if (state.city !== 'all' && group.city !== state.city) return false;
-  if (state.year === 'unknown' && group.year) return false;
-  if (state.year !== 'all' && state.year !== 'unknown' && String(group.year) !== state.year) return false;
-  if (state.type === 'unknown' && group.type) return false;
-  if (state.type !== 'all' && state.type !== 'unknown' && group.type !== state.type) return false;
+function groupPassesFilters(group, filters = state) {
+  if (filters.city !== 'all' && group.city !== filters.city) return false;
+  if (filters.year === 'unknown' && group.year) return false;
+  if (filters.year !== 'all' && filters.year !== 'unknown' && String(group.year) !== filters.year) return false;
+  if (filters.type === 'unknown' && group.type) return false;
+  if (filters.type !== 'all' && filters.type !== 'unknown' && group.type !== filters.type) return false;
   return true;
 }
 
@@ -82,19 +83,59 @@ function compareGroups(a, b) {
   return (state.sort === 'oldest' ? delta : -delta) || a.name.localeCompare(b.name, 'es');
 }
 
+function matchingGroups(overrides = {}) {
+  const filters = { ...state, ...overrides };
+  const query = normalize(filters.query);
+  return groups.filter(group => (!group.isEvent || (filters.year === 'all' && filters.type === 'all')) && groupPassesFilters(group, filters) && (!query || groupMatchesQuery(group, query)));
+}
+
 function getResults() {
-  const query = normalize(state.query);
-  return groups.filter(group => (!group.isEvent || (state.year === 'all' && state.type === 'all')) && groupPassesFilters(group) && (!query || groupMatchesQuery(group, query))).sort(compareGroups);
+  return matchingGroups().sort(compareGroups);
+}
+
+function collectionCounts(items) {
+  return {
+    groups: items.filter(group => !group.isEvent).length,
+    events: items.filter(group => group.isEvent).length,
+    photos: items.reduce((total, group) => total + group.photos.length, 0),
+    covers: items.reduce((total, group) => total + Number(Boolean(group.cover)), 0),
+  };
+}
+
+function updateFacets() {
+  for (const city of ['all', 'ceuta', 'cadiz']) {
+    const counts = collectionCounts(matchingGroups({ city }));
+    const label = $(`[data-city-count="${city}"]`);
+    label.innerHTML = `<strong>${number(counts.photos)} fotos</strong><span>${number(counts.groups)} ${counts.groups === 1 ? 'agrupación' : 'agrupaciones'}</span>`;
+    label.dataset.photos = counts.photos;
+    label.dataset.groups = counts.groups;
+  }
+  for (const [type] of CATEGORIES) {
+    const counts = collectionCounts(matchingGroups({ type }));
+    $(`[data-category-photos="${type}"]`).textContent = number(counts.photos);
+    $(`[data-category-groups="${type}"]`).textContent = `${number(counts.groups)} ${counts.groups === 1 ? 'agrupación' : 'agrupaciones'}`;
+    const button = $(`[data-type="${type}"]`);
+    button.dataset.photos = counts.photos;
+    button.dataset.groups = counts.groups;
+  }
+  const years = [...new Set(groups.map(group => group.year).filter(Boolean))].sort((a, b) => b - a);
+  const options = [['all', 'Todos los años'], ...years.map(year => [String(year), String(year)]), ['unknown', 'Sin fechar']];
+  $('#year-filter').innerHTML = options.map(([year, label]) => {
+    const count = collectionCounts(matchingGroups({ year })).photos;
+    return `<option value="${year}" data-photos="${count}">${label} · ${number(count)} fotos</option>`;
+  }).join('');
 }
 
 function groupCard(group) {
   const name = group.isEvent ? 'Encuentros en eventos' : group.name;
   const image = group.cover || group.photos[0];
   const imageClass = group.cover ? (image.height > image.width * 0.9 ? 'poster' : '') : 'personal';
-  return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" aria-label="Abrir ${escapeHTML(name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}">
-    <div class="card-image-wrap"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async">
-    <span class="card-year ${group.year ? '' : 'undated'}">${group.isEvent ? 'Álbum' : group.year || 'Sin fechar'}</span>${!group.cover && !group.isEvent ? '<span class="card-remember">Mi recuerdo</span>' : ''}<span class="card-city">${icon('pin')}${cityName(group.city)}</span></div>
-    <div class="card-info"><div class="card-type" data-modality="${group.type || 'unknown'}"><span class="type-dot"></span>${escapeHTML(group.isEvent ? 'Álbum de encuentros' : group.type ? typeName(group.type) : 'Por clasificar')}</div><h3>${escapeHTML(name)}</h3><div class="card-meta"><span>${icon('camera')}${group.photos.length} ${group.photos.length === 1 ? 'foto' : 'fotos'}</span>${icon('arrow')}</div></div>
+  const names = [...new Set(group.photos.filter(photo => photo.named).map(photo => photo.name))];
+  const preview = names.length ? `Con ${names.slice(0, 2).join(' · ')}${names.length > 2 ? '…' : ''}` : 'Encuentros conservados en mi álbum.';
+  return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" data-photos="${group.photos.length}" data-covers="${Number(Boolean(group.cover))}" aria-label="Abrir ${escapeHTML(name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}, ${group.photos.length} fotografías y ${Number(Boolean(group.cover))} portada">
+    <div class="card-topline"><span>${cityName(group.city)}</span><span class="card-year">${group.isEvent ? 'Encuentros' : group.year || 'Año por confirmar'}</span></div>
+    <div class="card-image-wrap"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async"><span class="card-image-label">${group.cover ? 'El tipo de aquel carnaval' : 'Una fotografía de mi álbum'}</span></div>
+    <div class="card-info"><div class="card-type">${escapeHTML(group.isEvent ? 'Álbum de encuentros' : group.type ? typeName(group.type) : 'Modalidad por confirmar')}</div><h3>${escapeHTML(name)}</h3><p class="card-people">${escapeHTML(preview)}</p><div class="card-counts"><div class="card-photo-count"><strong>${number(group.photos.length)}</strong><span>fotografías del álbum</span></div><div class="card-cover-count"><strong>${group.cover ? '1' : '—'}</strong><span>${group.cover ? 'portada' : 'sin portada aparte'}</span></div></div><span class="card-cta">Abrir el álbum ${icon('arrow')}</span></div>
   </button></article>`;
 }
 
@@ -104,13 +145,13 @@ function render() {
   state.page = Math.min(state.page, pages);
   const start = (state.page - 1) * PAGE_SIZE;
   const count = results.length;
-  const groupCount = results.filter(group => !group.isEvent).length;
-  const eventCount = count - groupCount;
-  const summary = [groupCount || !eventCount ? `${number(groupCount)} ${groupCount === 1 ? 'agrupación' : 'agrupaciones'}` : '', eventCount ? `${eventCount} álbum de eventos` : ''].filter(Boolean).join(' · ');
-  $('#results-count').innerHTML = `<strong>${summary}</strong>${count ? ` <span>· ${start + 1}–${Math.min(start + PAGE_SIZE, count)}</span>` : ''}${state.city !== 'all' ? ` en ${cityName(state.city)}` : ''}`;
+  const counts = collectionCounts(results);
+  $('#results-count').innerHTML = `<strong>${number(counts.groups)} ${counts.groups === 1 ? 'agrupación' : 'agrupaciones'}</strong><span class="result-photo-total" data-photo-total="${counts.photos}">${number(counts.photos)} fotografías</span><span>${number(counts.covers)} portadas${counts.events ? ` · ${counts.events} álbum de eventos` : ''}</span>`;
+  $('#results-pages').textContent = count ? `${start + 1}–${Math.min(start + PAGE_SIZE, count)} de ${count} fichas` : 'Sin resultados';
   const grid = $('#catalog-grid');
-  grid.innerHTML = count ? results.slice(start, start + PAGE_SIZE).map(groupCard).join('') : `<div class="empty-state">${icon('search')}<h3>¡Esa no la encuentro!</h3><p>Prueba con otro nombre o quita algún filtro.</p><button type="button" data-reset>Ver toda la colección ${icon('arrow')}</button></div>`;
+  grid.innerHTML = count ? results.slice(start, start + PAGE_SIZE).map(groupCard).join('') : `<div class="empty-state">${icon('search')}<h3>Este recuerdo aún no aparece.</h3><p>Prueba con otro nombre, año o modalidad.</p><button type="button" data-reset>Volver al archivo completo ${icon('arrow')}</button></div>`;
   renderPagination(pages);
+  updateFacets();
   syncControls();
   updateURL();
 }
@@ -149,8 +190,11 @@ function renderCollection() {
   const stats = catalogue.stats;
   $('#stat-groups').textContent = number(stats.groups);
   $('#stat-photos').textContent = number(stats.photos);
+  $('#stat-first-year').textContent = stats.firstYear;
+  $('#stat-last-year').textContent = stats.lastYear;
+  $('#category-tickets').innerHTML = CATEGORIES.map(([type, label]) => `<button type="button" class="category-ticket" data-type="${type}" aria-pressed="false"><span class="category-name">${label}</span><span class="category-groups" data-category-groups="${type}"></span><span class="category-photos"><strong data-category-photos="${type}"></strong> fotografías</span></button>`).join('');
   const years = [...new Set(groups.map(group => group.year).filter(Boolean))].sort((a, b) => b - a);
-  $('#year-filter').innerHTML = '<option value="all">Todos</option>' + years.map(year => `<option value="${year}">${year}</option>`).join('') + '<option value="unknown">Sin fechar</option>';
+  $('#year-filter').innerHTML = '<option value="all">Todos los años</option>' + years.map(year => `<option value="${year}">${year}</option>`).join('') + '<option value="unknown">Sin fechar</option>';
 }
 
 function openGroup(id, writeHash = true) {
@@ -162,10 +206,10 @@ function openGroup(id, writeHash = true) {
   const poster = Boolean(group.cover && image.height > image.width * 0.9);
   $('#group-content').innerHTML = `<div class="dialog-cover"><img src="${image.src}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" class="${poster ? 'poster' : ''}">${group.cover ? `<button type="button" class="cover-open" data-cover>${icon('search')}Ver portada completa</button>` : ''}<div class="dialog-heading"><div class="eyebrow">${cityName(group.city)} · ${escapeHTML(group.isEvent ? 'Encuentros en eventos' : typeName(group.type))}</div><h2 id="group-title">${escapeHTML(group.isEvent ? 'Encuentros en eventos' : group.name)}</h2></div></div>
     <div class="dialog-body"><div class="group-details"><div class="details-meta"><span class="meta-chip">${icon('pin')}${cityName(group.city)}</span><span class="meta-chip">${group.year || 'Año pendiente'}</span>${!group.isEvent ? `<span class="meta-chip">${escapeHTML(typeName(group.type))}</span>` : ''}</div><button type="button" class="share-button" id="share-group" aria-label="Copiar enlace a esta agrupación">${icon('link')}Copiar enlace</button></div>
-    <div class="album-title"><h3>Fotos con Montse</h3><span>${group.photos.length} ${group.photos.length === 1 ? 'foto para el álbum' : 'fotos para el álbum'}</span></div>
-    <div class="album-grid">${group.photos.map(photo => `<button type="button" class="album-photo" data-album-photo="${photo.id}" aria-label="Ver ${escapeHTML(photoLabel(photo))}"><span><img src="${photo.thumb}" width="${photo.width}" height="${photo.height}" alt="${escapeHTML(photoLabel(photo))}" loading="lazy" decoding="async"></span><span class="album-caption">${escapeHTML(photo.name)}</span></button>`).join('')}</div>
+    <div class="album-title"><div><span class="eyebrow">LOS INSTANTES COMPARTIDOS</span><h3>Mi álbum de encuentros</h3></div><span>${group.photos.length} ${group.photos.length === 1 ? 'fotografía' : 'fotografías'} · ${group.cover ? '1 portada' : 'sin portada aparte'}</span></div>
+    <div class="album-grid">${group.photos.map((photo, index) => `<button type="button" class="album-photo" data-album-photo="${photo.id}" aria-label="Ver ${escapeHTML(photoLabel(photo))}"><span class="album-image"><img src="${photo.thumb}" width="${photo.width}" height="${photo.height}" alt="${escapeHTML(photoLabel(photo))}" loading="lazy" decoding="async"></span><span class="album-caption"><span class="album-order">${String(index + 1).padStart(2, '0')}</span><span>${escapeHTML(photo.name)}</span></span></button>`).join('')}</div>
     ${!group.photos.length ? '<p class="no-photos">Aquí, de momento, está la portada.</p>' : ''}
-    <details class="record-notes"><summary>Un par de detalles</summary><p>Del álbum de Montse. Los nombres son los que guardó con cada foto. El año es el de la agrupación; la foto puede ser de otro encuentro.</p>${(!group.year || !group.type) && !group.isEvent ? '<p>Aún nos queda algún dato por confirmar. En cuanto lo tengamos claro, completamos la ficha.</p>' : ''}${!group.cover ? '<p>Esta agrupación sale con una foto del álbum porque todavía no tiene una portada aparte.</p>' : ''}${group.references.length ? `<p>Para completar los datos: ${group.references.map(reference => `<a href="${escapeHTML(reference.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(reference.title)}</a>`).join(', ')}.</p>` : ''}</details></div>`;
+    <details class="record-notes"><summary>Acerca de este recuerdo</summary><p>Las fotografías pertenecen al álbum personal de Montse. El año corresponde a la agrupación; cada encuentro puede haberse producido después. Las fotografías del álbum se cuentan por separado de la portada.</p>${(!group.year || !group.type) && !group.isEvent ? '<p>Algunos datos esperan todavía su confirmación. Se conservan abiertos para cuidar la memoria con rigor.</p>' : ''}${!group.cover ? '<p>Esta ficha se presenta con una fotografía del álbum, ya que no tiene una portada independiente.</p>' : ''}${group.references.length ? `<p>Referencias para los datos: ${group.references.map(reference => `<a href="${escapeHTML(reference.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(reference.title)}</a>`).join(', ')}.</p>` : ''}</details></div>`;
   lastFocus = document.activeElement;
   if (!groupDialog.open) groupDialog.showModal();
   groupDialog.scrollTop = 0;
@@ -198,7 +242,25 @@ function openPhotoList(records, index) {
   currentPhotoIndex = Math.max(0, index);
   updatePhoto();
   if (!photoDialog.open) photoDialog.showModal();
+  fitPhotograph();
   $('#close-photo').focus({ preventScroll: true });
+}
+
+function fitPhotograph() {
+  if (!photoDialog.open) return;
+  const record = currentPhotos[currentPhotoIndex];
+  if (!record) return;
+  const figure = $('.lightbox-figure');
+  const mount = $('.photo-mount');
+  const figureStyle = getComputedStyle(figure);
+  const mountStyle = getComputedStyle(mount);
+  const horizontalFrame = parseFloat(mountStyle.paddingLeft) + parseFloat(mountStyle.paddingRight) + parseFloat(mountStyle.borderLeftWidth) + parseFloat(mountStyle.borderRightWidth);
+  const verticalFrame = parseFloat(mountStyle.paddingTop) + parseFloat(mountStyle.paddingBottom) + parseFloat(mountStyle.borderTopWidth) + parseFloat(mountStyle.borderBottomWidth);
+  const width = Math.max(80, figure.clientWidth - parseFloat(figureStyle.paddingLeft) - parseFloat(figureStyle.paddingRight) - horizontalFrame - 10);
+  const height = Math.max(80, figure.clientHeight - parseFloat(figureStyle.paddingTop) - parseFloat(figureStyle.paddingBottom) - $('figcaption', figure).offsetHeight - parseFloat(figureStyle.gap) - verticalFrame - 10);
+  const scale = Math.min(width / record.photo.width, height / record.photo.height, 1);
+  mount.style.width = `${Math.floor(record.photo.width * scale) + horizontalFrame}px`;
+  mount.style.height = `${Math.floor(record.photo.height * scale) + verticalFrame}px`;
 }
 
 function openPhotoById(id) {
@@ -215,7 +277,8 @@ function updatePhoto() {
   const image = $('#lightbox-image');
   image.src = photo.src;
   image.alt = cover ? `Portada de ${group.name}` : photoLabel(photo);
-  $('#photo-position').textContent = `${currentPhotoIndex + 1} / ${currentPhotos.length}`;
+  $('#photo-position').textContent = `${cover ? 'Portada' : 'Fotografía'} ${String(currentPhotoIndex + 1).padStart(2, '0')} de ${String(currentPhotos.length).padStart(2, '0')}`;
+  $('#photo-kind').textContent = cover ? 'EL TIPO DE AQUEL CARNAVAL' : 'UN RECUERDO COMPARTIDO';
   $('#photo-caption').textContent = cover ? group.name : photoLabel(photo);
   $('#photo-context').textContent = `${group.isEvent ? 'Encuentros en eventos' : group.name} · ${cityName(group.city)}${group.year ? ` · Agrupación de ${group.year}` : ' · Año por confirmar'}${cover ? ' · Portada' : ''}`;
   $('#photo-prev').disabled = currentPhotoIndex === 0;
@@ -224,6 +287,7 @@ function updatePhoto() {
     const neighbor = currentPhotos[currentPhotoIndex + offset];
     if (neighbor) { const preload = new Image(); preload.src = neighbor.photo.src; }
   }
+  fitPhotograph();
 }
 
 function movePhoto(delta) {
@@ -237,7 +301,7 @@ function movePhoto(delta) {
 function toast(message) {
   clearTimeout(toastTimer);
   const element = $('#toast');
-  const host = photoDialog.open ? photoDialog : groupDialog.open ? groupDialog : document.body;
+  const host = photoDialog.open ? photoDialog : groupDialog.open ? groupDialog : aboutDialog.open ? aboutDialog : document.body;
   host.append(element);
   element.textContent = message;
   element.classList.add('visible');
@@ -249,7 +313,7 @@ async function shareGroup() {
   url.hash = `agrupacion/${currentGroup.id}`;
   try {
     await navigator.clipboard.writeText(url.href);
-    toast('¡Enlace copiado!');
+    toast('Enlace al recuerdo copiado.');
   } catch {
     const field = document.createElement('textarea');
     field.value = url.href;
@@ -260,7 +324,7 @@ async function shareGroup() {
     let success = false;
     try { success = document.execCommand('copy'); } catch { /* Manual selection remains available in the address bar. */ }
     field.remove();
-    toast(success ? '¡Enlace copiado!' : 'Puedes copiar el enlace desde la barra de direcciones.');
+    toast(success ? 'Enlace al recuerdo copiado.' : 'Puedes copiar el enlace desde la barra de direcciones.');
   }
 }
 
@@ -288,6 +352,7 @@ function setupEvents() {
     const button = event.target.closest('button');
     if (!button || button.disabled) return;
     if (button.hasAttribute('data-city')) setFilter('city', button.dataset.city);
+    else if (button.hasAttribute('data-type')) setFilter('type', button.dataset.type);
     else if (button.hasAttribute('data-page')) {
       state.page = Number(button.dataset.page);
       render();
@@ -304,7 +369,6 @@ function setupEvents() {
     searchTimer = setTimeout(() => setFilter('query', state.query), 150);
   });
   $('#year-filter').addEventListener('change', event => setFilter('year', event.target.value));
-  $('#type-filter').addEventListener('change', event => setFilter('type', event.target.value));
   $('#sort').addEventListener('change', event => setFilter('sort', event.target.value));
   $('#reset-filters').addEventListener('click', resetFilters);
   $('#close-group').addEventListener('click', closeGroup);
@@ -312,6 +376,12 @@ function setupEvents() {
   $('#close-photo').addEventListener('click', () => photoDialog.close());
   $('#photo-prev').addEventListener('click', () => movePhoto(-1));
   $('#photo-next').addEventListener('click', () => movePhoto(1));
+  $('#about-open').addEventListener('click', () => { aboutDialog.showModal(); aboutDialog.scrollTop = 0; });
+  $('#close-about').addEventListener('click', () => aboutDialog.close());
+  aboutDialog.addEventListener('click', event => {
+    const rect = aboutDialog.getBoundingClientRect();
+    if (event.target === aboutDialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) aboutDialog.close();
+  });
   groupDialog.addEventListener('click', event => {
     const rect = groupDialog.getBoundingClientRect();
     if (event.target === groupDialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closeGroup();
@@ -320,7 +390,7 @@ function setupEvents() {
     if (photoDialog.open && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
       event.preventDefault();
       movePhoto(event.key === 'ArrowRight' ? 1 : -1);
-    } else if (event.key === '/' && !groupDialog.open && !photoDialog.open && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+    } else if (event.key === '/' && !groupDialog.open && !photoDialog.open && !aboutDialog.open && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
       event.preventDefault();
       $('#search').focus();
       $('#search').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -337,6 +407,7 @@ function setupEvents() {
   }, { passive: true });
   window.addEventListener('popstate', () => { readURL(); render(); openFromHash(); if (!groupDialog.open) restoreGroupFocus(); });
   window.addEventListener('hashchange', openFromHash);
+  window.addEventListener('resize', fitPhotograph);
 }
 
 async function initialize() {
@@ -352,7 +423,7 @@ async function initialize() {
     openFromHash();
   } catch (error) {
     $('#results-count').textContent = 'El archivo no se ha podido cargar.';
-    $('#catalog-grid').innerHTML = '<div class="empty-state error-state"><h3>¡Un momento, que arrancamos!</h3><p>El álbum no ha cargado. Comprueba la conexión y prueba otra vez.</p><button type="button" id="retry-load">Volver a intentarlo</button></div>';
+    $('#catalog-grid').innerHTML = '<div class="empty-state error-state"><h3>El álbum espera un instante.</h3><p>No se ha podido cargar la colección. Comprueba la conexión y vuelve a intentarlo.</p><button type="button" id="retry-load">Volver a intentarlo</button></div>';
     $('#retry-load').addEventListener('click', () => location.reload());
     console.error('Unable to load the catalogue:', error);
   }
