@@ -1,6 +1,6 @@
 # El carnaval de Montse
 
-Enciclopedia personal entre Ceuta y Cádiz, con una entrada visual inspirada en el Gran Teatro Falla. HTML, CSS y JavaScript sin dependencias de ejecución ni servicios externos. Las tipografías están incluidas en el proyecto.
+Enciclopedia personal entre Ceuta y Cádiz, con el escenario del Gran Teatro Falla fijo detrás de toda la colección. El diseño se inspira en los carteles de carnaval, con una tipografía expresiva y textos cercanos. HTML, CSS y JavaScript sin dependencias de ejecución ni servicios externos. Las tipografías están incluidas en el proyecto.
 
 ## Abrir en local
 
@@ -12,7 +12,8 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 
 - Navegación por ciudad, año y modalidad; filtros combinables y búsqueda de agrupaciones e integrantes sin distinguir tildes.
 - Fichas con portada, álbum de encuentros y nombres de las fotografías.
-- Vista de encuentros, ordenación, paginación y recorrido por años.
+- Una sola colección con dos vistas: agrupaciones y fotos con Montse. Ciudad, búsqueda, año, modalidad y ordenación se controlan en el mismo sitio.
+- Paginación, enlaces directos y navegación atrás y adelante del navegador; las fichas tienen un botón de regreso siempre visible.
 - Visor de imágenes con teclado, gestos en móvil y cierre con Escape.
 - Enlaces a las fichas, con filtros conservados en la dirección.
 
@@ -31,7 +32,7 @@ Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles par
 
 - Fondo: `dist/assets/teatro-falla.webp`, creado con la herramienta integrada de generación de imágenes. Es una recreación artística inspirada en el teatro, no una fotografía documental.
 - Prompt: «Interior del Gran Teatro Falla visto desde una butaca central hacia el escenario; arquitectura neomudéjar, palcos iluminados, terciopelo burdeos, dorado antiguo, butacas en primer plano y espacio central oscuro para la tipografía; composición simétrica, sin personas ni texto».
-- Tipografías: Cormorant Garamond y Manrope, distribuidas mediante Google Fonts y guardadas en el proyecto. Licencias en `dist/assets/fonts/`.
+- Tipografías: Rye para los títulos de cartel, Bricolage Grotesque para textos y controles, y Caveat para la firma y las notas. Distribuidas mediante Google Fonts y guardadas en el proyecto. Licencias en `dist/assets/fonts/`.
 - Las portadas y los encuentros proceden exclusivamente de la colección facilitada.
 
 ## Publicación

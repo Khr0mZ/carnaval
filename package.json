@@ -1,7 +1,7 @@
 {
   "name": "el-carnaval-de-montse",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "La enciclopedia personal del carnaval de Montse, entre Ceuta y Cádiz.",
   "scripts": {
     "start": "node scripts/serve.mjs",
