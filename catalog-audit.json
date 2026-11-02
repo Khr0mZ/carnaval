@@ -1,0 +1,77 @@
+{
+  "stats": {
+    "groups": 219,
+    "photos": 1125,
+    "images": 1337,
+    "cities": 2,
+    "firstYear": 2007,
+    "lastYear": 2026,
+    "undated": 4,
+    "unclassified": 4
+  },
+  "pending": [
+    {
+      "id": "cadiz/antologia-carapapas",
+      "name": "Antologia Carapapas",
+      "year": 2022,
+      "type": null,
+      "hasCover": true
+    },
+    {
+      "id": "cadiz/shhh",
+      "name": "Shhh",
+      "year": 2026,
+      "type": "chirigota",
+      "hasCover": false
+    },
+    {
+      "id": "ceuta/los-camarones",
+      "name": "Los Camarones",
+      "year": 2024,
+      "type": null,
+      "hasCover": true
+    },
+    {
+      "id": "ceuta/los-matariles",
+      "name": "Los Matariles",
+      "year": 2010,
+      "type": "comparsa",
+      "hasCover": false
+    },
+    {
+      "id": "ceuta/los-primeros",
+      "name": "Los Primeros",
+      "year": 2022,
+      "type": "chirigota",
+      "hasCover": false
+    },
+    {
+      "id": "ceuta/los-recortados",
+      "name": "Los Recortados",
+      "year": null,
+      "type": null,
+      "hasCover": false
+    },
+    {
+      "id": "ceuta/los-recortaos",
+      "name": "Los Recortaos",
+      "year": null,
+      "type": null,
+      "hasCover": false
+    },
+    {
+      "id": "ceuta/los-san-fermines",
+      "name": "Los San Fermines",
+      "year": null,
+      "type": "chirigota",
+      "hasCover": false
+    },
+    {
+      "id": "ceuta/los-superheroes",
+      "name": "Los Superhéroes",
+      "year": null,
+      "type": "chirigota",
+      "hasCover": false
+    }
+  ]
+}

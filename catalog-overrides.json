@@ -1,0 +1,493 @@
+{
+  "ceuta/la-hipocrita": {
+    "name": "La Hipócrita",
+    "year": 2026,
+    "type": "comparsa"
+  },
+  "ceuta/ahi-esta-el-tio": {
+    "year": 2010,
+    "type": "chirigota",
+    "name": "Ahí está er tío"
+  },
+  "ceuta/ahojala-samurai": {
+    "year": 2025,
+    "type": "chirigota",
+    "name": "¡Ajoláh sa murái!"
+  },
+  "ceuta/al-lio": {
+    "year": 2026,
+    "type": "coro",
+    "name": "Al lío"
+  },
+  "ceuta/aqui-mando-yo": {
+    "year": 2025,
+    "type": "chirigota",
+    "name": "Aquí mando yo"
+  },
+  "ceuta/aqui-sale-to-kisky": {
+    "year": 2014,
+    "type": "chirigota",
+    "name": "Aquí sale Tokisky"
+  },
+  "ceuta/cara-al-sol": {
+    "year": 2015,
+    "type": "cuarteto"
+  },
+  "ceuta/carta-blanca": {
+    "year": 2014,
+    "type": "comparsa"
+  },
+  "ceuta/con-mucho-gusto": {
+    "year": 2011,
+    "type": "chirigota"
+  },
+  "ceuta/con-permiso-buenas-tardes": {
+    "year": 2025,
+    "type": "coro"
+  },
+  "ceuta/de-momento-un-invento": {
+    "year": 2009,
+    "type": "comparsa",
+    "references": [
+      {
+        "title": "El blog del Nini de Ceuta, crónica del concurso 2009 (IV)",
+        "url": "https://nomecuentesnadaquelocuento.blogspot.com/2009/"
+      }
+    ]
+  },
+  "ceuta/del-cielo-al-infierno": {
+    "year": 2009,
+    "type": "cuarteto"
+  },
+  "ceuta/el-cajonazo": {
+    "year": 2011,
+    "type": "comparsa"
+  },
+  "ceuta/el-callejon-del-lobo": {
+    "year": 2007,
+    "type": "comparsa"
+  },
+  "ceuta/el-clan": {
+    "year": 2017,
+    "type": "comparsa"
+  },
+  "ceuta/el-cumpleanos-de-manolito": {
+    "year": 2020,
+    "type": "chirigota"
+  },
+  "ceuta/el-hombre-del-saco": {
+    "year": 2017,
+    "type": "comparsa"
+  },
+  "ceuta/el-mercado-me-da-iwal": {
+    "year": 2025,
+    "type": "chirigota"
+  },
+  "ceuta/el-premio-te-lo-regalo": {
+    "year": 2026,
+    "type": "chirigota"
+  },
+  "ceuta/el-principe-2-0": {
+    "year": 2017,
+    "type": "cuarteto",
+    "name": "Il Prínsipe Yus.0"
+  },
+  "ceuta/el-que-sale-por-las-copas": {
+    "year": 2025,
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "El Faro de Ceuta, final del COAC 2025",
+        "url": "https://elfarodeceuta.es/el-que-sale-por-las-copas-dudu-merece-reconocido-coac-carnaval-2025/"
+      }
+    ]
+  },
+  "ceuta/el-tren-de-la-vida": {
+    "year": 2019,
+    "type": "comparsa"
+  },
+  "ceuta/el-truhan-del-tirititran": {
+    "year": 2011,
+    "type": "comparsa"
+  },
+  "ceuta/el-valle-de-los-caidos": {
+    "year": 2020,
+    "type": "coro"
+  },
+  "ceuta/en-la-isla-te-espero": {
+    "year": 2018,
+    "type": "chirigota"
+  },
+  "ceuta/enemigas-intimas": {
+    "year": 2012,
+    "type": "chirigota",
+    "name": "Enemigas íntimas"
+  },
+  "ceuta/este-ano-no-salimos": {
+    "year": 2012,
+    "type": "chirigota"
+  },
+  "ceuta/este-ano-salimos-de-cabeza": {
+    "year": 2017,
+    "type": "chirigota"
+  },
+  "ceuta/frente-atletico": {
+    "year": 2009,
+    "type": "chirigota",
+    "name": "Frente Atlético"
+  },
+  "ceuta/hasta-el-sol": {
+    "year": 2018,
+    "type": "comparsa"
+  },
+  "ceuta/hay-un-amigo-en-mi": {
+    "year": 2026,
+    "type": "chirigota",
+    "name": "Hay un amigo en mí"
+  },
+  "ceuta/juan-viva-va-y-los-40": {
+    "year": 2020,
+    "type": "chirigota"
+  },
+  "ceuta/la-conquista-del-pan": {
+    "year": 2023,
+    "type": "comparsa"
+  },
+  "ceuta/la-gira-de-los-pantomimas": {
+    "year": 2012,
+    "type": "comparsa"
+  },
+  "ceuta/la-gorda-me-da-de-comer": {
+    "year": 2012,
+    "type": "chirigota",
+    "name": "La gorda me da de comé"
+  },
+  "ceuta/la-madre-que-los-pario": {
+    "year": 2016,
+    "type": "chirigota",
+    "name": "La madre que los parió"
+  },
+  "ceuta/la-noble-y-leal": {
+    "year": 2011,
+    "type": "comparsa"
+  },
+  "ceuta/la-reconquista": {
+    "year": 2007,
+    "type": "comparsa"
+  },
+  "ceuta/la-remendona": {
+    "year": 2026,
+    "type": "comparsa"
+  },
+  "ceuta/la-revuelta": {
+    "year": 2013,
+    "type": "chirigota"
+  },
+  "ceuta/la-senda-de-los-elefantes": {
+    "year": 2007,
+    "type": "chirigota"
+  },
+  "ceuta/las-castrati": {
+    "year": 2016,
+    "type": "comparsa",
+    "name": "Los Castrati"
+  },
+  "ceuta/las-devotas": {
+    "year": 2024,
+    "type": "comparsa"
+  },
+  "ceuta/las-oseas": {
+    "year": 2013,
+    "type": "chirigota",
+    "name": "Las Osea"
+  },
+  "ceuta/las-que-vienen-de-linares": {
+    "year": 2020,
+    "type": "chirigota"
+  },
+  "ceuta/las-tirititran": {
+    "year": 2026,
+    "type": "comparsa",
+    "name": "Las Tirititrán"
+  },
+  "cadiz/la-banda-del-titanic": {
+    "year": 2024,
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "La chirigota del Bizcocho · La última y nos vamos (2024), tipo de la orquesta del Titanic",
+        "url": "https://lachirigotadelbizcocho.com/chirigota/la-ultima-y-nos-vamos/"
+      }
+    ]
+  },
+  "cadiz/shhh": {
+    "year": 2026,
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "Canal Sur · Chirigota Ssshhhhh!!!, COAC 2026",
+        "url": "https://www.canalsur.es/television/carnaval-sur/chirigota-ssshhhhh_1_1380908.html"
+      }
+    ]
+  },
+  "cadiz/si-yo-dijera-lo-que-pienso": {
+    "year": 2019,
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "Canal Sur · Si yo dijera lo que pienso, COAC 2019",
+        "url": "https://www.canalsur.es/television/carnaval-sur/ozbdc-si-dijera-pienso-acaparan_1_1047628.html"
+      }
+    ]
+  },
+  "cadiz/una-chirigota-con-shonikete": {
+    "year": 2025,
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "Canal Sur · Una chirigota con Shoniket3, COAC 2025",
+        "url": "https://www.canalsur.es/television/carnaval-sur/chirigota-shoniket3_1_1314988.html"
+      }
+    ]
+  },
+  "ceuta/los-bala-perdia": {
+    "name": "La Banda de los Bala Perdía",
+    "year": 2014,
+    "type": "comparsa"
+  },
+  "ceuta/los-caballeros-legionarios": {
+    "name": "Los Caballeros Legendarios",
+    "year": 2015,
+    "type": "chirigota"
+  },
+  "ceuta/los-clones": {
+    "year": 2008,
+    "type": "chirigota"
+  },
+  "ceuta/los-del-27": {
+    "year": 2009,
+    "type": "comparsa"
+  },
+  "ceuta/los-del-ferry": {
+    "year": 2019,
+    "type": "comparsa"
+  },
+  "ceuta/los-fast-and-fourious": {
+    "name": "Los Fast Furius",
+    "year": 2020,
+    "type": "chirigota"
+  },
+  "ceuta/los-fenomenos": {
+    "name": "Los Fenómenos",
+    "year": 2010,
+    "type": "comparsa"
+  },
+  "ceuta/los-genios-del-musiclaje": {
+    "year": 2012,
+    "type": "comparsa"
+  },
+  "ceuta/los-granillos-de-arenilla": {
+    "year": 2010,
+    "type": "chirigota"
+  },
+  "ceuta/los-hermanos-siameses-que-no-se-limpian-desde-hace-meses": {
+    "year": 2009,
+    "type": "chirigota"
+  },
+  "ceuta/los-hijos-de-la-arena": {
+    "year": 2019,
+    "type": "comparsa"
+  },
+  "ceuta/los-ilusionistas": {
+    "year": 2012,
+    "type": "comparsa"
+  },
+  "ceuta/los-joselitos": {
+    "name": "Los Joselito",
+    "year": 2013,
+    "type": "chirigota"
+  },
+  "ceuta/los-ki": {
+    "year": 2016,
+    "type": "chirigota"
+  },
+  "ceuta/los-lander-braun": {
+    "name": "Los Lander Bräu",
+    "year": 2013,
+    "type": "chirigota"
+  },
+  "ceuta/los-lenguetas": {
+    "name": "Los Lengüetas",
+    "year": 2024,
+    "type": "comparsa"
+  },
+  "ceuta/los-librepensadores": {
+    "year": 2014,
+    "type": "comparsa"
+  },
+  "ceuta/los-llaneros-solitarios": {
+    "name": "Los Llanitos Solitarios",
+    "year": 2023,
+    "type": "chirigota"
+  },
+  "ceuta/los-lolailos": {
+    "year": 2018,
+    "type": "chirigota"
+  },
+  "ceuta/los-matariles": {
+    "year": 2010,
+    "type": "comparsa",
+    "references": [
+      {
+        "title": "BOCCE 4960, 29 de junio de 2010 · Comparsa Los Matariles",
+        "url": "https://www.ceuta.es/ceuta/component/jdownloads/finish/342-junio/1959-bocce-4960-29-06-2010?Itemid=534"
+      }
+    ]
+  },
+  "ceuta/los-miembros-del-jurado": {
+    "year": 2008,
+    "type": "chirigota"
+  },
+  "ceuta/los-mirones": {
+    "year": 2013,
+    "type": "comparsa"
+  },
+  "ceuta/los-ninos-de-los-chirigoteros-y-los-comparsistas": {
+    "year": 2024,
+    "type": "chirigota"
+  },
+  "ceuta/los-olvidaos": {
+    "year": 2022,
+    "type": "comparsa"
+  },
+  "ceuta/los-pasotas-de-copas": {
+    "year": 2018,
+    "type": "chirigota"
+  },
+  "ceuta/los-pequenos-nicolas": {
+    "name": "Los Pequeño Nicolás",
+    "year": 2015,
+    "type": "chirigota"
+  },
+  "ceuta/los-pequenos-sherpas-del-tunes-del-chorrillo": {
+    "name": "Los Pequeños Sherpas del Túnel del Chorrillo",
+    "year": 2026,
+    "type": "chirigota"
+  },
+  "ceuta/los-piratas-del-estrecho": {
+    "year": 2017,
+    "type": "chirigota"
+  },
+  "ceuta/los-primeros": {
+    "year": 2022,
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "La Verdad de Ceuta · Crónica del COAC 2022, con la chirigota Los Primeros",
+        "url": "https://www.laverdaddeceuta.com/cultura/noticias/cultura/los-olvidaos-y-ya-echo-de-menos-la-calle-ganan-un-emotivo-coac-que-recordo-a-alba-torres"
+      }
+    ]
+  },
+  "ceuta/los-que-se-juegan-el-tipo": {
+    "year": 2011,
+    "type": "chirigota"
+  },
+  "ceuta/los-que-se-vienen-pa-arriba": {
+    "year": 2015,
+    "type": "comparsa"
+  },
+  "ceuta/los-quijotes-del-estrecho": {
+    "name": "El Quijote del Estrecho",
+    "year": 2016,
+    "type": "comparsa"
+  },
+  "ceuta/los-reyes-del-tatachan": {
+    "name": "Banda Municipal Los Reyes del Tatachán",
+    "year": 2009,
+    "type": "chirigota"
+  },
+  "ceuta/los-rompedientes": {
+    "year": 2014,
+    "type": "chirigota"
+  },
+  "ceuta/los-san-fermines": {
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "El Faro de Ceuta · Especial Carnaval 2015, entrevista a Francisco Javier Salas: chirigota San Fermines",
+        "url": "https://esdocs.com/doc/533487/especialcarnaval2015"
+      }
+    ]
+  },
+  "ceuta/los-sims-saladin": {
+    "name": "Los Sin Saladín",
+    "year": 2016,
+    "type": "chirigota"
+  },
+  "ceuta/los-super-na": {
+    "name": "Los Superná",
+    "year": 2014,
+    "type": "chirigota"
+  },
+  "ceuta/los-superheroes": {
+    "type": "chirigota",
+    "references": [
+      {
+        "title": "El Faro de Ceuta · En la piel del carnaval de Ceuta: testimonio de José Luis Muñoz, Boca, sobre la chirigota Los Superhéroes",
+        "url": "https://elfarodeceuta.es/en-la-piel-del-carnaval-de-ceuta/amp/"
+      }
+    ]
+  },
+  "ceuta/los-tralara": {
+    "name": "Los Tralará",
+    "year": 2013,
+    "type": "comparsa"
+  },
+  "ceuta/los-xaqueteros": {
+    "year": 2017,
+    "type": "comparsa"
+  },
+  "ceuta/los-yonkis": {
+    "year": 2016,
+    "type": "comparsa"
+  },
+  "ceuta/me-faltan-dos": {
+    "year": 2024,
+    "type": "chirigota"
+  },
+  "ceuta/menuda-agrupacion": {
+    "year": 2026,
+    "type": "chirigota"
+  },
+  "ceuta/o-doble-o-nada": {
+    "year": 2012,
+    "type": "comparsa"
+  },
+  "ceuta/santa-catalina": {
+    "year": 2014,
+    "type": "comparsa"
+  },
+  "ceuta/siempre-asi": {
+    "year": 2007,
+    "type": "chirigota"
+  },
+  "ceuta/una-chirigota-completa": {
+    "year": 2024,
+    "type": "chirigota"
+  },
+  "ceuta/wakatanga-montamos-el-pollo": {
+    "name": "Los Wakatanga Montamos el Pollo",
+    "year": 2011,
+    "type": "chirigota"
+  },
+  "ceuta/ya-echaba-de-menos-la-calle": {
+    "name": "Ya Echo de Menos la Calle",
+    "year": 2022,
+    "type": "chirigota"
+  },
+  "ceuta/yo-queria-ser-comparsista": {
+    "name": "Yo Quería Ser Comparsista",
+    "year": 2017,
+    "type": "comparsa"
+  }
+}

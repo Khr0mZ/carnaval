@@ -1,0 +1,7 @@
+node_modules/
+.local/
+*.tar.gz
+*.tgz
+__pycache__/
+.openai/
+_fuentes/
