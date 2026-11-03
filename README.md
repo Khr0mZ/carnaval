@@ -19,7 +19,7 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 - Un único recorrido: encontrar una agrupación, abrir su ficha y ver sus fotos. No hay una vista global de fotografías. El álbum de eventos de las fuentes conserva su propia entrada, identificada como álbum.
 - Paginación, enlaces directos y navegación atrás y adelante del navegador; las fichas tienen un botón de regreso siempre visible.
 - Visor con marco ajustado a cada fotografía, cartela de programa, navegación por teclado, gestos en móvil y cierre con Escape.
-- «Mis Anecdotas» abre el diario de Montse con dos pestañas, Cádiz y Ceuta: comienzos, recuerdos por año y una reflexión final compartida. Se conserva el texto completo de `../Mi_vida_entre_coplas_recuerdos_y_carnaval.txt`. Las pestañas permiten ratón, pantalla táctil y teclado (flechas, Inicio y Fin).
+- «Mis Anecdotas» abre el diario de Montse con dos pestañas, Cádiz y Ceuta: comienzos, recuerdos por año y una reflexión final compartida. El contenido publicado es el texto completo de `../v3.txt`, la revisión de prosa basada en `../v2.txt`, integrado en `dist/index.html`. Las pestañas permiten ratón, pantalla táctil y teclado (flechas, Inicio y Fin).
 - Enlaces a las fichas, con filtros conservados en la dirección.
 
 El año corresponde a la agrupación, no a la fecha de la fotografía. Los datos desconocidos quedan sin fechar o por clasificar. No se deducen años de fechas de archivos ni se inventan modalidades. Las fotos sin nombre de integrante conservan una descripción genérica.
