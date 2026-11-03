@@ -43,3 +43,28 @@ html{scroll-padding-top:15px}.theatre-backdrop{background-size:auto 100lvh;backg
 @media(max-width:850px){.filter-row{grid-template-columns:repeat(2,minmax(0,1fr))}.search-field{grid-column:1/-1}}
 @media(max-width:600px){.member-filter>label{font-size:7px;letter-spacing:.8px}.member-field{height:44px}#member-search{height:42px;font-size:10px;padding-left:8px;padding-right:4px}#clear-member{width:29px;min-width:29px;height:36px;padding:0 6px}.member-suggestions{width:max(100%,310px);max-width:calc(100vw - 64px)}#member-options{max-height:252px}#member-options [role=option]{padding:12px}.member-name{font-size:23px}.member-totals{font-size:9px}.member-city{font-size:7px}#member-suggestion-status{font-size:8px}}
 .member-suggestions.opens-up{top:auto;bottom:calc(100% + 6px)}
+
+/* Carnival lettering leads the programme; reading text keeps its quieter face. */
+.brand-name,.viewer-brand,.site-footer p{font-family:var(--poster);font-style:normal;font-weight:400;letter-spacing:0}
+.brand-name{font-size:34px;line-height:1.2;white-space:nowrap;text-shadow:0 2px 0 #4b2630}
+.hero h1{font-family:var(--poster);font-weight:400;font-size:clamp(34px,4.1vw,59px);line-height:1.28;letter-spacing:.2px;text-wrap:balance;text-shadow:0 2px 0 #5d3533,0 5px 25px #0c060b}
+.hero h1 em{font-family:inherit;font-style:normal;font-size:.94em}
+.section-heading h2{font-family:var(--poster);font-weight:400;font-size:clamp(27px,2.5vw,35px);line-height:1.3;letter-spacing:0}
+.section-heading h2 em{display:block;font-size:1.22em;line-height:1.15;margin-top:5px}
+.city-name{font-family:var(--poster);font-weight:400;font-size:22px;line-height:1.2}
+.card-info h3{font-family:var(--poster);font-weight:400;font-size:25px;line-height:1.22;letter-spacing:0;text-wrap:pretty}
+.dialog-heading h2{font-family:var(--poster);font-weight:400;font-size:clamp(29px,3.5vw,46px);line-height:1.2}
+.album-title h3{font-family:var(--poster);font-weight:400;font-size:25px;line-height:1.3}
+.album-caption{font-family:var(--poster);font-weight:400;font-size:18px;line-height:1.35;overflow-wrap:anywhere}
+.album-caption>span:last-child{min-width:0}
+.viewer-brand{font-size:27px}
+.dialog-bar>span,.letter-toolbar>span{font-family:var(--poster);font-weight:400;font-size:12px;letter-spacing:1px}
+#photo-caption{font-family:var(--poster);font-weight:400;font-size:25px;line-height:1.25;overflow-wrap:anywhere}
+.thank-you-letter h2{font-family:var(--poster);font-weight:400;font-size:37px;line-height:1.25}
+.thank-you-letter h2 em{font-size:1.25em;line-height:1.1;margin-top:7px}
+.site-footer p{font-size:23px;line-height:1.3}
+@media(max-width:1100px){.city-tab{flex-direction:column;justify-content:center}.city-count{text-align:center}.brand-name{font-size:30px}.card-info h3{font-size:23px}}
+@media(max-width:850px){.hero h1{font-size:clamp(34px,5.3vw,45px)}.city-name{font-size:21px}.album-title h3{font-size:23px}}
+@media(max-width:600px){.brand-name{font-size:24px}.hero h1{font-size:clamp(24px,6.6vw,36px);line-height:1.35;letter-spacing:0}.section-heading h2{font-size:27px}.section-heading h2 em{font-size:1.18em}.city-name{font-size:19px}.card-info h3{font-size:21px;line-height:1.25}.dialog-heading h2{font-size:29px}.album-title h3{font-size:22px}.album-caption{font-size:17px;line-height:1.35}.viewer-brand{font-size:22px}.dialog-bar>span,.letter-toolbar>span{font-size:10px}.thank-you-letter h2{font-size:30px}.site-footer p{font-size:18px}#photo-caption{font-size:22px}.lightbox-top{column-gap:10px}}
+@media(max-width:350px){.brand-name{font-size:21px}.site-header{gap:10px}.hero h1{font-size:23px}.section-heading h2{font-size:24px}.city-name{font-size:17px}.card-info h3{font-size:19px}.album-caption{font-size:16px}.viewer-brand{font-size:19px}.dialog-bar>span{font-size:9px;letter-spacing:.5px}.site-footer{gap:12px}.site-footer p{font-size:16px}}
+@media(max-height:560px){.viewer-brand{font-size:21px}#photo-caption{font-size:20px}}
