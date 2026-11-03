@@ -18,6 +18,8 @@ Los dos laterales comparten un único archivo: el derecho se refleja. `<picture>
 
 `dist/frames.js` identifica por conectividad la abertura central en el alpha real del marco. Se dibujan la moldura y la máscara con la misma división en nueve piezas: las esquinas conservan sus proporciones y solo se alargan los tramos rectos. La fotografía y su fondo interior se recortan con esa máscara; el exterior del marco conserva su transparencia y sus bordes suavizados. Se aplica a portadas, fotografías de los álbumes y al visor. Los resultados se reutilizan y se recalculan al cambiar de tamaño. El visor mantiene las proporciones originales de cada fotografía.
 
+El recorte también se aplica al papel y al terciopelo de ciudades, modalidades, botones, cifras y panel principal. Los fondos y textos de los controles se ajustan a la abertura real. Para paneles altos se componen nueve recortes del mismo alpha con una máscara SVG funcional, evitando crear lienzos gigantes. La carta, los diálogos y los pies de foto usan la silueta exterior completa para conservar su fondo al hacer scroll. No se añaden dibujos SVG decorativos.
+
 ## Prompts finales
 
 ### Interior del Falla

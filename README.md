@@ -13,7 +13,7 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 - Navegación por ciudad, año y modalidad; filtros combinables y búsqueda de agrupaciones sin distinguir tildes.
 - Agrupaciones siempre en orden alfabético español, en todas las páginas y filtros. No hay selector de orden.
 - Autocompletado de integrantes por nombre o apodo, con cifras de agrupaciones y fotos. Permite teclado, selección táctil, limpieza del filtro y enlaces con `integrante=`. Se combina con los demás filtros y devuelve fichas de agrupaciones, no una vista global de fotos.
-- Fichas con portada, álbum de encuentros y nombres de las fotografías.
+- Fichas con portada, álbum de recuerdos y nombres de las fotografías.
 - Recuentos de agrupaciones y fotografías por modalidad, ciudad y año, ajustados a los demás filtros y la búsqueda. Las fotografías del álbum se cuentan por separado de las portadas.
 - Tarjetas con ciudad, edición, modalidad, nombres presentes en el álbum y cantidades de fotografías y portadas.
 - Un único recorrido: encontrar una agrupación, abrir su ficha y ver sus fotos. No hay una vista global de fotografías. El álbum de eventos de las fuentes conserva su propia entrada, identificada como álbum.
@@ -28,7 +28,7 @@ El índice de integrantes se construye a partir de las etiquetas de las fotos de
 
 ## Añadir fotografías o completar datos
 
-1. Añadir una carpeta o imágenes en `../_fuentes/cadiz/` o `../_fuentes/ceuta/`. La portada se identifica comparando el nombre del archivo con el de la carpeta o por la modalidad indicada en su nombre. Los demás archivos son encuentros.
+1. Añadir una carpeta o imágenes en `../_fuentes/cadiz/` o `../_fuentes/ceuta/`. La portada se identifica comparando el nombre del archivo con el de la carpeta o por la modalidad indicada en su nombre. Los demás archivos son recuerdos.
 2. Si la portada incluye un año y una modalidad (p. ej., `Los Humanos Comparsa 2026.jpg`), se importan esos datos.
 3. Para completar o corregir una ficha sin renombrar los originales, editar `catalog-overrides.json`, usando el identificador de `catalog-audit.json`. Campos: `name`, `year`, `type`, `coverName` y, opcionalmente, `references` (lista con `title` y `url`). Modalidades: `comparsa`, `chirigota`, `coro`, `cuarteto`.
 4. Ejecutar `python scripts/build_catalog.py` (requiere Pillow). Se generan `dist/catalog.json`, las copias WebP y el informe de datos pendientes `catalog-audit.json`. Las conversiones existentes se reutilizan; para volver a generar una foto cambiada, borrar únicamente sus dos derivados en `dist/assets/photos/` antes de reconstruir.
@@ -42,9 +42,10 @@ Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles par
 - Escenografía regenerada con acabado fotorealista: interior, tres modelos de telón, madera dorada, papel verjurado y terciopelo, creados con `image_gen` y guardados en `dist/assets/theatre/`. Los archivos, usos y prompts finales figuran en [docs/visual-assets.md](docs/visual-assets.md).
 - Telones fijos a la altura completa de pantalla, con anchura automática para conservar su proporción. `<picture>` elige el modelo según el ancho y el alto: móvil hasta 3/5, tablet hasta 6/5 y escritorio a partir de ahí. El navegador descarga solo el modelo que corresponde y lo cambia al girar o redimensionar la pantalla.
 - Marcos con transparencia real: `dist/frames.js` obtiene la abertura desde el alpha del marco y aplica el mismo recorte a la fotografía y su fondo interior. Las esquinas mantienen sus proporciones; no sobresale fotografía por los huecos exteriores. `dist/frames.css` compone las capas en tarjetas, álbumes y visor.
+- Los fondos de papel y terciopelo de ciudades, modalidades, botones y paneles también se recortan con ese alpha. Los textos de los controles quedan dentro de la abertura; la carta y los diálogos conservan su contorno al desplazarse. Las etiquetas de la web usan «recuerdos», incluido «Mi álbum de recuerdos».
 - `dist/theatre.css` contiene el acabado de materiales, las molduras, las tarjetas, los controles y los álbumes. El fondo del Falla sigue fijo detrás de la portada y del archivo.
 - Animaciones: apertura de los telones, entrada escalonada de las fichas y fotografías al recorrer el álbum, apertura de diálogos y transición del marco al cambiar de fotografía. Se respeta `prefers-reduced-motion`, incluso si la preferencia cambia con la página abierta. El pie de foto permite desplazamiento cuando una etiqueta colectiva es demasiado larga.
-- Las portadas y los encuentros proceden exclusivamente de la colección facilitada.
+- Las portadas y los recuerdos proceden exclusivamente de la colección facilitada.
 - La página no usa confeti, SVG decorativos ni botones cuyo único propósito sea hacer scroll. Se conservan los iconos funcionales. El único panel explicativo es el agradecimiento solicitado por el usuario.
 
 ## Publicación

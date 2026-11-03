@@ -63,3 +63,88 @@
 @media(max-height:560px) {
   .photo-mount.framed-media { --frame-inset:13px; }
 }
+
+/* The material underneath a UI frame uses the same real aperture as a photo. */
+.framed-surface {
+  isolation:isolate;
+  background:none!important;
+  box-shadow:none!important;
+}
+.hero-stats.framed-surface { position:relative; }
+.framed-surface::before {
+  content:'';
+  display:block;
+  position:absolute;
+  left:var(--surface-left,0px);
+  top:var(--surface-top,0px);
+  right:auto;
+  bottom:auto;
+  width:var(--surface-width,100%);
+  height:var(--surface-height,100%);
+  padding:0;
+  border:0;
+  z-index:-1;
+  pointer-events:none;
+  background:var(--surface-fill);
+  -webkit-mask-image:var(--surface-aperture,linear-gradient(transparent,transparent));
+  mask-image:var(--surface-aperture,linear-gradient(transparent,transparent));
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+}
+.city-tab.framed-surface::after {
+  content:'';
+  position:absolute;
+  pointer-events:none;
+  inset:0;
+  border:18px solid transparent;
+  border-image:var(--gilded-frame) 28% / 19px / 1px stretch;
+}
+.surface-content {
+  display:flex;
+  position:relative;
+  flex:1;
+  width:100%;
+  min-width:0;
+  flex-direction:inherit;
+  align-items:inherit;
+  justify-content:inherit;
+  gap:inherit;
+}
+.photo-nav>.surface-content { display:flex; }
+.surface-ready>.surface-content {
+  -webkit-mask-image:var(--surface-aperture);
+  mask-image:var(--surface-aperture);
+  -webkit-mask-size:var(--surface-width) var(--surface-height);
+  mask-size:var(--surface-width) var(--surface-height);
+  -webkit-mask-position:var(--content-mask-x) var(--content-mask-y);
+  mask-position:var(--content-mask-x) var(--content-mask-y);
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+}
+.city-tab { --surface-fill:#421c2c; }
+.city-tab.active { --surface-fill:#f5e4c0 var(--programme-paper) center/cover; }
+.city-tab:hover:not(.active) { --surface-fill:#633047; }
+.category-ticket { --surface-fill:linear-gradient(#6a3043,#371624); }
+.category-ticket.active { --surface-fill:#f3e2bf var(--programme-paper) center/cover; }
+.category-ticket:hover:not(.active) { --surface-fill:linear-gradient(#87425a,#4d2235); }
+.theatre-button { --surface-fill:linear-gradient(#6d2b42,#391627); }
+.theatre-button:hover { --surface-fill:#813c53; }
+.hero-stats { --surface-fill:#f0dfbb var(--programme-paper) center/cover; }
+.archive { --surface-fill:linear-gradient(120deg,#491a2b99,#27101cdb),url('assets/theatre/terciopelo-fotografico.webp') left top/700px; }
+.framed-shell {
+  -webkit-mask-image:var(--shell-mask);
+  mask-image:var(--shell-mask);
+  -webkit-mask-size:var(--surface-width) var(--surface-height);
+  mask-size:var(--surface-width) var(--surface-height);
+  -webkit-mask-position:var(--shell-mask-x) var(--shell-mask-y);
+  mask-position:var(--shell-mask-x) var(--shell-mask-y);
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-clip:no-clip;
+  mask-clip:no-clip;
+}
+@media(max-width:600px) {
+  .city-tab.framed-surface::after { border-image-width:15px; }
+}
