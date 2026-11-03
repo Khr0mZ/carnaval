@@ -40,6 +40,9 @@ Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles par
 - Fondo: `dist/assets/teatro-falla.webp`, creado con la herramienta integrada de generación de imágenes. Es una recreación artística inspirada en el teatro, no una fotografía documental.
 - Prompt: «Interior del Gran Teatro Falla visto desde una butaca central hacia el escenario; arquitectura neomudéjar, palcos iluminados, terciopelo burdeos, dorado antiguo, butacas en primer plano y espacio central oscuro para la tipografía; composición simétrica, sin personas ni texto».
 - Tipografías: Rye da carácter de cartel de carnaval a la cabecera, los títulos, las agrupaciones y los álbumes. Cormorant Garamond acompaña las frases emotivas y la carta, Manrope los controles y datos, y Caveat la firma. Archivos guardados en el proyecto; licencias en `dist/assets/fonts/`.
+- Escenografía: telones bordados con transparencia, marco dorado y papel de programa creados con `image_gen` y guardados en `dist/assets/theatre/`. Los tres WebP suman 344.104 bytes. Los archivos, usos y prompts finales figuran en [docs/visual-assets.md](docs/visual-assets.md).
+- `dist/theatre.css` contiene el acabado de materiales, las molduras, las tarjetas, los controles y los álbumes. El fondo del Falla sigue fijo detrás de la portada y del archivo.
+- Animaciones: apertura de los telones, entrada escalonada de las fichas y fotografías al recorrer el álbum, apertura de diálogos y transición del marco al cambiar de fotografía. Se respeta `prefers-reduced-motion`, incluso si la preferencia cambia con la página abierta. El pie de foto permite desplazamiento cuando una etiqueta colectiva es demasiado larga.
 - Las portadas y los encuentros proceden exclusivamente de la colección facilitada.
 - La página no usa confeti, SVG decorativos ni botones cuyo único propósito sea hacer scroll. Se conservan los iconos funcionales. El único panel explicativo es el agradecimiento solicitado por el usuario.
 

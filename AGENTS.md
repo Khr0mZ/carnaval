@@ -14,6 +14,8 @@ The current name is "Mi carnaval". The user now prefers a solemn, very emotional
 
 The display typography must visibly evoke carnival posters: use the local Rye face for the brand, prominent headings and grouping names. Do not revert these to an ordinary literary serif. Keep longer emotional text and controls readable with the supporting typefaces.
 
+The user explicitly requested a richer visual treatment with created images and animation. Keep the generated velvet curtains, gilded frames and programme paper in `dist/assets/theatre/`, the material styling in `dist/theatre.css`, and the purposeful entry and photo animations. Respect reduced-motion preferences, keep decorations out of interaction, and preserve photo proportions and readable captions. Asset prompts and provenance are in `docs/visual-assets.md`.
+
 Browse by grouping first, then open the group's album and its photos. Do not reintroduce a global photo view or scroll-only navigation buttons. The user has explicitly requested the top-right "Qué es esto" button again, opening an emotional thank-you letter signed by Montse. Show accurate contextual photo counts by category and separate album photographs from covers.
 
 Always sort the grouping list alphabetically in Spanish, with no ordering selector. The requested member autocomplete filters grouping entries using the names preserved in the photo labels. Keep it combinable with city, year, modality and grouping-name search. Do not claim complete rosters or merge unverified aliases.

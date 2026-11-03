@@ -20,6 +20,38 @@ let members = [], membersByKey = new Map(), memberDraft = '', memberSuggestions 
 const groupDialog = $('#group-dialog');
 const photoDialog = $('#photo-dialog');
 const aboutDialog = $('#about-dialog');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let revealObserver, photoAnimation;
+
+function clearReveals(root) {
+  $$('.reveal-pending', root).forEach(element => revealObserver?.unobserve(element));
+}
+
+function revealProgrammes(root) {
+  if (reducedMotion.matches || !('IntersectionObserver' in window)) return;
+  revealObserver ||= new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.remove('reveal-pending');
+      entry.target.classList.add('is-revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  }, { threshold: .06, rootMargin: '0px 0px -20px 0px' });
+  $$('.group-card,.album-photo', root).forEach((element, index) => {
+    element.style.setProperty('--reveal-delay', `${index % 3 * 85}ms`);
+    element.classList.add('reveal-pending');
+    revealObserver.observe(element);
+  });
+}
+
+function animatePhotograph() {
+  photoAnimation?.cancel();
+  if (reducedMotion.matches || !photoDialog.open) return;
+  photoAnimation = $('.photo-mount').animate([
+    { opacity: .25, transform: 'translateY(10px) scale(.985)' },
+    { opacity: 1, transform: 'translateY(0) scale(1)' },
+  ], { duration: 420, easing: 'cubic-bezier(.2,.7,.2,1)' });
+}
 
 function readURL() {
   const params = new URLSearchParams(location.search);
@@ -277,11 +309,13 @@ function render() {
   $('#results-count').innerHTML = `<strong>${number(counts.groups)} ${counts.groups === 1 ? 'agrupación' : 'agrupaciones'}</strong><span class="result-photo-total" data-photo-total="${counts.photos}">${number(counts.photos)} fotografías</span><span>${number(counts.covers)} portadas${counts.events ? ` · ${counts.events} álbum de eventos` : ''}</span>`;
   $('#results-pages').textContent = count ? `${start + 1}–${Math.min(start + PAGE_SIZE, count)} de ${count} fichas` : 'Sin resultados';
   const grid = $('#catalog-grid');
+  clearReveals(grid);
   grid.innerHTML = count ? results.slice(start, start + PAGE_SIZE).map(groupCard).join('') : `<div class="empty-state">${icon('search')}<h3>Este recuerdo aún no aparece.</h3><p>Prueba con otro nombre, año o modalidad.</p><button type="button" data-reset>Volver al archivo completo ${icon('arrow')}</button></div>`;
   renderPagination(pages);
   updateFacets();
   syncControls();
   updateURL();
+  revealProgrammes(grid);
 }
 
 function renderPagination(pages) {
@@ -335,6 +369,7 @@ function openGroup(id, writeHash = true) {
   currentGroup = group;
   const image = group.cover || group.photos[0];
   const poster = Boolean(group.cover && image.height > image.width * 0.9);
+  clearReveals($('#group-content'));
   $('#group-content').innerHTML = `<div class="dialog-cover"><img src="${image.src}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" class="${poster ? 'poster' : ''}">${group.cover ? `<button type="button" class="cover-open" data-cover>${icon('search')}Ver portada completa</button>` : ''}<div class="dialog-heading"><div class="eyebrow">${cityName(group.city)} · ${escapeHTML(group.isEvent ? 'Encuentros en eventos' : typeName(group.type))}</div><h2 id="group-title">${escapeHTML(group.isEvent ? 'Encuentros en eventos' : group.name)}</h2></div></div>
     <div class="dialog-body"><div class="group-details"><div class="details-meta"><span class="meta-chip">${icon('pin')}${cityName(group.city)}</span><span class="meta-chip">${group.year || 'Año pendiente'}</span>${!group.isEvent ? `<span class="meta-chip">${escapeHTML(typeName(group.type))}</span>` : ''}</div><button type="button" class="share-button" id="share-group" aria-label="Copiar enlace a esta agrupación">${icon('link')}Copiar enlace</button></div>
     <div class="album-title"><div><span class="eyebrow">LOS INSTANTES COMPARTIDOS</span><h3>Mi álbum de encuentros</h3></div><span>${group.photos.length} ${group.photos.length === 1 ? 'fotografía' : 'fotografías'} · ${group.cover ? '1 portada' : 'sin portada aparte'}</span></div>
@@ -344,6 +379,7 @@ function openGroup(id, writeHash = true) {
   lastFocus = document.activeElement;
   if (!groupDialog.open) groupDialog.showModal();
   groupDialog.scrollTop = 0;
+  revealProgrammes($('#group-content'));
   $('#close-group').focus({ preventScroll: true });
   if (writeHash) history.pushState({ carnavalModal: true }, '', `${location.pathname}${location.search}#agrupacion/${group.id}`);
 }
@@ -536,6 +572,8 @@ function setupEvents() {
   $('#close-group').addEventListener('click', closeGroup);
   groupDialog.addEventListener('cancel', event => { event.preventDefault(); closeGroup(); });
   $('#close-photo').addEventListener('click', () => photoDialog.close());
+  $('#lightbox-image').addEventListener('load', () => { fitPhotograph(); animatePhotograph(); });
+  photoDialog.addEventListener('close', () => photoAnimation?.cancel());
   $('#photo-prev').addEventListener('click', () => movePhoto(-1));
   $('#photo-next').addEventListener('click', () => movePhoto(1));
   $('#about-open').addEventListener('click', () => { aboutDialog.showModal(); aboutDialog.scrollTop = 0; });
@@ -574,6 +612,13 @@ function setupEvents() {
   window.addEventListener('scroll', positionMemberSuggestions, { passive: true });
   window.visualViewport?.addEventListener('resize', positionMemberSuggestions);
   window.visualViewport?.addEventListener('scroll', positionMemberSuggestions);
+  reducedMotion.addEventListener('change', () => {
+    if (!reducedMotion.matches) return;
+    photoAnimation?.cancel();
+    revealObserver?.disconnect();
+    $$('.reveal-pending').forEach(element => element.classList.remove('reveal-pending'));
+  });
+  document.fonts.ready.then(fitPhotograph);
 }
 
 async function initialize() {
