@@ -1,11 +1,11 @@
 {
   "name": "mi-carnaval",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Mi carnaval: un álbum de recuerdos y agrupaciones entre Ceuta y Cádiz.",
   "scripts": {
     "start": "node scripts/serve.mjs",
     "catalog": "python scripts/build_catalog.py",
-    "check": "node --check dist/app.js"
+    "check": "node --check dist/app.js && node --check dist/frames.js"
   }
 }

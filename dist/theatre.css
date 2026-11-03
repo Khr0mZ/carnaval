@@ -1,24 +1,27 @@
 /* The material layer: generated velvet, gilded mouldings and programme paper. */
 :root {
-  --programme-paper: url('assets/theatre/papel-programa.webp');
-  --gilded-frame: url('assets/theatre/marco-dorado.webp');
+  --programme-paper: url('assets/theatre/papel-fotografico.webp');
+  --gilded-frame: url('assets/theatre/marco-fotografico.webp');
   --ease-theatre: cubic-bezier(.2,.7,.2,1);
   --gold: #dbb676;
   --gold-light: #f6dfac;
 }
 body { background: #200c18; }
-.theatre-backdrop { background-image: linear-gradient(#20091738,#14061270),url('assets/teatro-falla.webp'); }
+.theatre-backdrop { background-image: linear-gradient(#20091738,#14061270),url('assets/theatre/teatro-falla-fotografico.webp'); }
 .theatre-backdrop::after { background: radial-gradient(ellipse at 50% 35%,transparent 15%,#1a071b70 100%); }
 .site-header { z-index:4; padding-top:27px; padding-bottom:20px; }
 .brand-name { color:#ffe7af; text-shadow:0 2px 0 #5c2535,0 5px 20px #130712; }
 .brand-small { color:#f0d1a0; }
 
-/* The foreground curtains open onto the Falla, which remains fixed behind them. */
+/* Art-directed wings frame the full viewport without stretching the fabric. */
 .hero { position:relative; min-height:590px; padding:65px 32px 82px; isolation:isolate; }
-.stage-drapery { position:absolute; inset:-100px 0 -40px; overflow:hidden; z-index:-1; pointer-events:none; }
-.stage-curtain { position:absolute; top:0; height:100%; width:auto; max-width:none; object-fit:contain; filter:drop-shadow(10px 12px 18px #14000c66); }
-.stage-curtain-left { left:-42px; transform-origin:left top; animation:curtain-left 1.65s var(--ease-theatre) both; }
-.stage-curtain-right { right:-42px; transform:scaleX(-1); transform-origin:center; animation:curtain-right 1.65s var(--ease-theatre) both; }
+.stage-drapery { position:fixed; inset:0; height:100vh; height:100dvh; overflow:hidden; z-index:0; pointer-events:none; }
+.stage-wing { position:absolute; top:0; height:100%; width:max-content; display:block; }
+.stage-wing-left { left:0; }
+.stage-wing-right { right:0; }
+.stage-curtain { --curtain-travel:24px; display:block; height:100%; width:auto; max-width:none; object-fit:contain; filter:drop-shadow(10px 12px 18px #14000c66); }
+.stage-curtain-left { animation:curtain-left 1.65s var(--ease-theatre) both; }
+.stage-curtain-right { transform:scaleX(-1); animation:curtain-right 1.65s var(--ease-theatre) both; }
 .hero-content { position:relative; width:min(950px,100%); padding:10px 0; }
 .hero-content::before { content:''; position:absolute; z-index:-1; inset:-55px -25px; background:radial-gradient(ellipse,#1c0b16d9,transparent 72%); pointer-events:none; }
 .hero-ticket { color:#f4d191; font-size:10px; letter-spacing:3px; margin-bottom:27px; }
@@ -37,7 +40,7 @@ body { background: #200c18; }
 
 /* A gilded programme, with the paper tickets laid on velvet. */
 .section-wrap { width:min(1230px,calc(100% - 90px)); }
-.archive { padding:16px 23px 27px; border:32px solid transparent; border-image:var(--gilded-frame) 28% / 55px / 7px stretch; background:linear-gradient(120deg,#491a2be8,#27101cf5),url('assets/theatre/telon-bordado.webp') left top/cover; box-shadow:0 25px 90px #10030ac9; backdrop-filter:blur(5px); }
+.archive { padding:16px 23px 27px; border:32px solid transparent; border-image:var(--gilded-frame) 28% / 55px / 7px stretch; background:linear-gradient(120deg,#491a2b99,#27101cdb),url('assets/theatre/terciopelo-fotografico.webp') left top/700px; box-shadow:0 25px 90px #10030ac9; backdrop-filter:blur(5px); }
 .archive::before { display:none; }
 .section-heading { text-align:center; padding:14px 15px 26px; margin-bottom:26px; border-bottom:3px double #cba26978; }
 .section-heading .eyebrow { font-size:9px; letter-spacing:3px; color:#e8c586; }
@@ -154,7 +157,7 @@ dialog::backdrop { background:#170515b8; backdrop-filter:blur(8px); animation:ba
 .record-notes { color:#835b3f; font-size:11px; border-color:#a57c498c; }
 
 /* The viewer has a real gilded frame; the image itself keeps its proportions. */
-.photo-dialog { border:0; animation:photograph-open .4s var(--ease-theatre) both; }
+.photo-dialog { border:0; background-image:linear-gradient(#170b14d9,#211018eb),url('assets/theatre/teatro-falla-fotografico.webp'); animation:photograph-open .4s var(--ease-theatre) both; }
 .lightbox-top { padding:23px 35px; border-bottom:3px double #d2aa6b69; background:linear-gradient(#311221ed,#28101c8c); }
 .viewer-brand { color:#efce91; font-size:28px; }
 .lightbox-close { font-size:9px; padding:13px 20px; }
@@ -185,8 +188,8 @@ dialog::backdrop { background:#170515b8; backdrop-filter:blur(8px); animation:ba
   .card-open:hover .card-image { filter:brightness(1.09) saturate(1.06); }
   .album-photo:hover { rotate:0deg; translate:0 -5px; box-shadow:0 14px 22px #6f482e45; }
 }
-@keyframes curtain-left { from{transform:translateX(95px) rotate(2deg)} to{transform:translateX(0) rotate(0)} }
-@keyframes curtain-right { from{transform:translateX(-95px) scaleX(-1) rotate(2deg)} to{transform:translateX(0) scaleX(-1) rotate(0)} }
+@keyframes curtain-left { from{opacity:.65;transform:translateX(calc(-1 * var(--curtain-travel)))} to{opacity:1;transform:translateX(0)} }
+@keyframes curtain-right { from{opacity:.65;transform:translateX(var(--curtain-travel)) scaleX(-1)} to{opacity:1;transform:translateX(0) scaleX(-1)} }
 @keyframes stage-words { from{opacity:0;transform:translateY(20px);filter:blur(4px)} to{opacity:1;transform:translateY(0);filter:blur(0)} }
 @keyframes programme-arrival { from{opacity:0;transform:translateY(28px) rotateX(4deg)} to{opacity:1;transform:translateY(0) rotateX(0)} }
 @keyframes album-open { from{opacity:0;transform:translateY(24px) scale(.96)} to{opacity:1;transform:translateY(0) scale(1)} }
@@ -197,8 +200,6 @@ dialog::backdrop { background:#170515b8; backdrop-filter:blur(8px); animation:ba
   .section-wrap,.site-footer { width:calc(100% - 56px); }
   .archive { border-width:26px; border-image-width:31px; padding:15px 18px 24px; }
   .hero { min-height:580px; }
-  .stage-curtain-left { left:-115px; }
-  .stage-curtain-right { right:-115px; }
   .city-tab { padding:21px 12px; }
   .card-open { padding:16px; }
   .card-info h3 { font-size:24px; }
@@ -236,9 +237,6 @@ dialog::backdrop { background:#170515b8; backdrop-filter:blur(8px); animation:ba
   .brand-name { font-size:24px; }
   .about-open { min-width:111px; font-size:9px; padding:13px 14px; }
   .hero { min-height:580px; padding:58px 24px 63px; }
-  .stage-drapery { inset:-95px 0 -15px; }
-  .stage-curtain-left { left:-255px; }
-  .stage-curtain-right { right:-255px; }
   .hero-content { padding:0; }
   .hero-content::before { inset:-25px -15px; }
   .hero-ticket { font-size:7px; letter-spacing:1.8px; line-height:1.8; margin-bottom:23px; }
@@ -407,3 +405,5 @@ dialog::backdrop { background:#170515b8; backdrop-filter:blur(8px); animation:ba
   .stage-curtain-right { transform:scaleX(-1); }
   * { scroll-behavior:auto!important; transition:none!important; }
 }
+@media(max-aspect-ratio:6/5) { .stage-curtain { --curtain-travel:14px; } }
+@media(max-aspect-ratio:3/5) { .stage-curtain { --curtain-travel:5px; } }

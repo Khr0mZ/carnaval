@@ -294,7 +294,7 @@ function groupCard(group) {
   const preview = selectedMember ? `Con ${selectedMember.name} · ${memberPhotoCount} ${memberPhotoCount === 1 ? 'fotografía' : 'fotografías'}` : names.length ? `Con ${names.slice(0, 2).join(' · ')}${names.length > 2 ? '…' : ''}` : 'Encuentros conservados en mi álbum.';
   return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" data-photos="${group.photos.length}" data-member-photos="${memberPhotoCount}" data-covers="${Number(Boolean(group.cover))}" aria-label="Abrir ${escapeHTML(name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}, ${group.photos.length} fotografías y ${Number(Boolean(group.cover))} portada">
     <div class="card-topline"><span>${cityName(group.city)}</span><span class="card-year">${group.isEvent ? 'Encuentros' : group.year || 'Año por confirmar'}</span></div>
-    <div class="card-image-wrap"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async"><span class="card-image-label">${group.cover ? 'El tipo de aquel carnaval' : 'Una fotografía de mi álbum'}</span></div>
+    <div class="card-image-wrap framed-media"><span class="photo-window"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async"><span class="card-image-label">${group.cover ? 'El tipo de aquel carnaval' : 'Una fotografía de mi álbum'}</span></span></div>
     <div class="card-info"><div class="card-type">${escapeHTML(group.isEvent ? 'Álbum de encuentros' : group.type ? typeName(group.type) : 'Modalidad por confirmar')}</div><h3>${escapeHTML(name)}</h3><p class="card-people">${escapeHTML(preview)}</p><div class="card-counts"><div class="card-photo-count"><strong>${number(group.photos.length)}</strong><span>fotografías del álbum</span></div><div class="card-cover-count"><strong>${group.cover ? '1' : '—'}</strong><span>${group.cover ? 'portada' : 'sin portada aparte'}</span></div></div><span class="card-cta">Abrir el álbum ${icon('arrow')}</span></div>
   </button></article>`;
 }
@@ -310,12 +310,14 @@ function render() {
   $('#results-pages').textContent = count ? `${start + 1}–${Math.min(start + PAGE_SIZE, count)} de ${count} fichas` : 'Sin resultados';
   const grid = $('#catalog-grid');
   clearReveals(grid);
+  window.CarnivalFrames?.release(grid);
   grid.innerHTML = count ? results.slice(start, start + PAGE_SIZE).map(groupCard).join('') : `<div class="empty-state">${icon('search')}<h3>Este recuerdo aún no aparece.</h3><p>Prueba con otro nombre, año o modalidad.</p><button type="button" data-reset>Volver al archivo completo ${icon('arrow')}</button></div>`;
   renderPagination(pages);
   updateFacets();
   syncControls();
   updateURL();
   revealProgrammes(grid);
+  window.CarnivalFrames?.observe(grid);
 }
 
 function renderPagination(pages) {
@@ -370,16 +372,18 @@ function openGroup(id, writeHash = true) {
   const image = group.cover || group.photos[0];
   const poster = Boolean(group.cover && image.height > image.width * 0.9);
   clearReveals($('#group-content'));
+  window.CarnivalFrames?.release($('#group-content'));
   $('#group-content').innerHTML = `<div class="dialog-cover"><img src="${image.src}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" class="${poster ? 'poster' : ''}">${group.cover ? `<button type="button" class="cover-open" data-cover>${icon('search')}Ver portada completa</button>` : ''}<div class="dialog-heading"><div class="eyebrow">${cityName(group.city)} · ${escapeHTML(group.isEvent ? 'Encuentros en eventos' : typeName(group.type))}</div><h2 id="group-title">${escapeHTML(group.isEvent ? 'Encuentros en eventos' : group.name)}</h2></div></div>
     <div class="dialog-body"><div class="group-details"><div class="details-meta"><span class="meta-chip">${icon('pin')}${cityName(group.city)}</span><span class="meta-chip">${group.year || 'Año pendiente'}</span>${!group.isEvent ? `<span class="meta-chip">${escapeHTML(typeName(group.type))}</span>` : ''}</div><button type="button" class="share-button" id="share-group" aria-label="Copiar enlace a esta agrupación">${icon('link')}Copiar enlace</button></div>
     <div class="album-title"><div><span class="eyebrow">LOS INSTANTES COMPARTIDOS</span><h3>Mi álbum de encuentros</h3></div><span>${group.photos.length} ${group.photos.length === 1 ? 'fotografía' : 'fotografías'} · ${group.cover ? '1 portada' : 'sin portada aparte'}</span></div>
-    <div class="album-grid">${group.photos.map((photo, index) => `<button type="button" class="album-photo" data-album-photo="${photo.id}" aria-label="Ver ${escapeHTML(photoLabel(photo))}"><span class="album-image"><img src="${photo.thumb}" width="${photo.width}" height="${photo.height}" alt="${escapeHTML(photoLabel(photo))}" loading="lazy" decoding="async"></span><span class="album-caption"><span class="album-order">${String(index + 1).padStart(2, '0')}</span><span>${escapeHTML(photo.name)}</span></span></button>`).join('')}</div>
+    <div class="album-grid">${group.photos.map((photo, index) => `<button type="button" class="album-photo" data-album-photo="${photo.id}" aria-label="Ver ${escapeHTML(photoLabel(photo))}"><span class="album-image framed-media"><span class="photo-window"><img src="${photo.thumb}" width="${photo.width}" height="${photo.height}" alt="${escapeHTML(photoLabel(photo))}" loading="lazy" decoding="async"></span></span><span class="album-caption"><span class="album-order">${String(index + 1).padStart(2, '0')}</span><span>${escapeHTML(photo.name)}</span></span></button>`).join('')}</div>
     ${!group.photos.length ? '<p class="no-photos">Aquí, de momento, está la portada.</p>' : ''}
     <details class="record-notes"><summary>Acerca de este recuerdo</summary><p>Las fotografías pertenecen al álbum personal de Montse. El año corresponde a la agrupación; cada encuentro puede haberse producido después. Las fotografías del álbum se cuentan por separado de la portada.</p>${(!group.year || !group.type) && !group.isEvent ? '<p>Algunos datos esperan todavía su confirmación. Se conservan abiertos para cuidar la memoria con rigor.</p>' : ''}${!group.cover ? '<p>Esta ficha se presenta con una fotografía del álbum, ya que no tiene una portada independiente.</p>' : ''}${group.references.length ? `<p>Referencias para los datos: ${group.references.map(reference => `<a href="${escapeHTML(reference.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(reference.title)}</a>`).join(', ')}.</p>` : ''}</details></div>`;
   lastFocus = document.activeElement;
   if (!groupDialog.open) groupDialog.showModal();
   groupDialog.scrollTop = 0;
   revealProgrammes($('#group-content'));
+  window.CarnivalFrames?.observe($('#group-content'));
   $('#close-group').focus({ preventScroll: true });
   if (writeHash) history.pushState({ carnavalModal: true }, '', `${location.pathname}${location.search}#agrupacion/${group.id}`);
 }
@@ -428,6 +432,7 @@ function fitPhotograph() {
   const scale = Math.min(width / record.photo.width, height / record.photo.height, 1);
   mount.style.width = `${Math.floor(record.photo.width * scale) + horizontalFrame}px`;
   mount.style.height = `${Math.floor(record.photo.height * scale) + verticalFrame}px`;
+  window.CarnivalFrames?.refresh(mount);
 }
 
 function openPhotoById(id) {
@@ -632,6 +637,7 @@ async function initialize() {
     readURL();
     setupEvents();
     render();
+    window.CarnivalFrames?.observe(document);
     openFromHash();
   } catch (error) {
     $('#results-count').textContent = 'El archivo no se ha podido cargar.';

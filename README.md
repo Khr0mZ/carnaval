@@ -37,10 +37,11 @@ Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles par
 
 ## Diseño y recursos
 
-- Fondo: `dist/assets/teatro-falla.webp`, creado con la herramienta integrada de generación de imágenes. Es una recreación artística inspirada en el teatro, no una fotografía documental.
-- Prompt: «Interior del Gran Teatro Falla visto desde una butaca central hacia el escenario; arquitectura neomudéjar, palcos iluminados, terciopelo burdeos, dorado antiguo, butacas en primer plano y espacio central oscuro para la tipografía; composición simétrica, sin personas ni texto».
+- Fondo: `dist/assets/theatre/teatro-falla-fotografico.webp`, regenerado con acabado fotorealista y fijo durante la navegación. Es una recreación generada inspirada en el teatro, no una fotografía documental.
 - Tipografías: Rye da carácter de cartel de carnaval a la cabecera, los títulos, las agrupaciones y los álbumes. Cormorant Garamond acompaña las frases emotivas y la carta, Manrope los controles y datos, y Caveat la firma. Archivos guardados en el proyecto; licencias en `dist/assets/fonts/`.
-- Escenografía: telones bordados con transparencia, marco dorado y papel de programa creados con `image_gen` y guardados en `dist/assets/theatre/`. Los tres WebP suman 344.104 bytes. Los archivos, usos y prompts finales figuran en [docs/visual-assets.md](docs/visual-assets.md).
+- Escenografía regenerada con acabado fotorealista: interior, tres modelos de telón, madera dorada, papel verjurado y terciopelo, creados con `image_gen` y guardados en `dist/assets/theatre/`. Los archivos, usos y prompts finales figuran en [docs/visual-assets.md](docs/visual-assets.md).
+- Telones fijos a la altura completa de pantalla, con anchura automática para conservar su proporción. `<picture>` elige el modelo según el ancho y el alto: móvil hasta 3/5, tablet hasta 6/5 y escritorio a partir de ahí. El navegador descarga solo el modelo que corresponde y lo cambia al girar o redimensionar la pantalla.
+- Marcos con transparencia real: `dist/frames.js` obtiene la abertura desde el alpha del marco y aplica el mismo recorte a la fotografía y su fondo interior. Las esquinas mantienen sus proporciones; no sobresale fotografía por los huecos exteriores. `dist/frames.css` compone las capas en tarjetas, álbumes y visor.
 - `dist/theatre.css` contiene el acabado de materiales, las molduras, las tarjetas, los controles y los álbumes. El fondo del Falla sigue fijo detrás de la portada y del archivo.
 - Animaciones: apertura de los telones, entrada escalonada de las fichas y fotografías al recorrer el álbum, apertura de diálogos y transición del marco al cambiar de fotografía. Se respeta `prefers-reduced-motion`, incluso si la preferencia cambia con la página abierta. El pie de foto permite desplazamiento cuando una etiqueta colectiva es demasiado larga.
 - Las portadas y los encuentros proceden exclusivamente de la colección facilitada.

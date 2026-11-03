@@ -9,16 +9,29 @@
   <meta property="og:description" content="Lo que canta el alma no lo borra el tiempo. Un álbum de recuerdos compartidos entre Ceuta y Cádiz, por Montse.">
   <title>Mi carnaval · Los recuerdos que se quedan</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preload" as="image" href="assets/teatro-falla.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/theatre/telon-bordado.webp">
+  <link rel="preload" as="image" href="assets/theatre/teatro-falla-fotografico.webp" fetchpriority="high">
   <link rel="preload" as="font" href="assets/fonts/rye.woff2" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="fonts.css?v=4">
-  <link rel="stylesheet" href="styles.css?v=6">
-  <link rel="stylesheet" href="theatre.css?v=1">
-  <script src="app.js?v=7" defer></script>
+  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="theatre.css?v=3">
+  <link rel="stylesheet" href="frames.css?v=1">
+  <script src="frames.js?v=1" defer></script>
+  <script src="app.js?v=8" defer></script>
 </head>
 <body>
   <div class="theatre-backdrop" aria-hidden="true"></div>
+  <div class="stage-drapery" aria-hidden="true">
+    <picture class="stage-wing stage-wing-left">
+      <source media="(max-aspect-ratio: 3/5)" srcset="assets/theatre/telon-movil.webp" width="724" height="2172">
+      <source media="(max-aspect-ratio: 6/5)" srcset="assets/theatre/telon-tablet.webp" width="887" height="1774">
+      <img class="stage-curtain stage-curtain-left" src="assets/theatre/telon-escritorio.webp" alt="" width="1024" height="1536" fetchpriority="high">
+    </picture>
+    <picture class="stage-wing stage-wing-right">
+      <source media="(max-aspect-ratio: 3/5)" srcset="assets/theatre/telon-movil.webp" width="724" height="2172">
+      <source media="(max-aspect-ratio: 6/5)" srcset="assets/theatre/telon-tablet.webp" width="887" height="1774">
+      <img class="stage-curtain stage-curtain-right" src="assets/theatre/telon-escritorio.webp" alt="" width="1024" height="1536" fetchpriority="high">
+    </picture>
+  </div>
   <a class="skip-link" href="#archivo">Saltar a la enciclopedia</a>
   <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
@@ -40,7 +53,6 @@
 
   <main>
     <section class="hero" id="inicio" aria-labelledby="hero-title">
-      <div class="stage-drapery" aria-hidden="true"><img class="stage-curtain stage-curtain-left" src="assets/theatre/telon-bordado.webp" alt="" width="800" height="1200" fetchpriority="high"><img class="stage-curtain stage-curtain-right" src="assets/theatre/telon-bordado.webp" alt="" width="800" height="1200"></div>
       <div class="hero-content">
         <div class="hero-ticket">CEUTA Y CÁDIZ · LOS AÑOS COMPARTIDOS</div>
         <h1 id="hero-title">Lo que canta el alma,<br><em>no lo borra el tiempo.</em></h1>
@@ -85,7 +97,7 @@
   <dialog id="photo-dialog" class="photo-dialog" aria-label="Visor de fotografías">
     <div class="lightbox-top"><span class="viewer-brand">Mi carnaval</span><span id="photo-position"></span><button type="button" class="lightbox-close theatre-button" id="close-photo"><svg class="icon"><use href="#i-arrow"/></svg> Volver al álbum</button></div>
     <button type="button" class="photo-prev photo-nav theatre-button" id="photo-prev" aria-label="Fotografía anterior"><svg class="icon"><use href="#i-chevron"/></svg><span>Anterior</span></button>
-    <figure class="lightbox-figure"><div class="photo-mount"><img id="lightbox-image" alt=""></div><figcaption><span class="caption-eyebrow" id="photo-kind">UN RECUERDO COMPARTIDO</span><span id="photo-caption"></span><small id="photo-context"></small></figcaption></figure>
+    <figure class="lightbox-figure"><div class="photo-mount framed-media"><span class="photo-window"><img id="lightbox-image" alt=""></span></div><figcaption><span class="caption-eyebrow" id="photo-kind">UN RECUERDO COMPARTIDO</span><span id="photo-caption"></span><small id="photo-context"></small></figcaption></figure>
     <button type="button" class="photo-next photo-nav theatre-button" id="photo-next" aria-label="Fotografía siguiente"><span>Siguiente</span><svg class="icon"><use href="#i-chevron"/></svg></button>
   </dialog>
   <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title">

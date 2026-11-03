@@ -1,0 +1,65 @@
+/* The photograph and its matte are cut to the actual transparent aperture. */
+.framed-media {
+  --frame-inset:24px;
+  position:relative;
+  padding:var(--frame-inset);
+  border:0;
+  background:none;
+  outline:0;
+  box-shadow:none;
+  overflow:visible;
+  filter:drop-shadow(0 7px 8px #11060c59);
+}
+.framed-media::before { display:none; }
+.framed-media::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:3;
+  border:0;
+  pointer-events:none;
+  background:var(--frame-artwork) center/100% 100% no-repeat;
+}
+.photo-window {
+  position:absolute;
+  display:block;
+  inset:0;
+  background:#241319;
+  clip-path:inset(var(--frame-inset));
+}
+.frame-ready>.photo-window {
+  clip-path:none;
+  -webkit-mask-image:var(--frame-aperture);
+  mask-image:var(--frame-aperture);
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+}
+.photo-window>img {
+  position:absolute;
+  inset:var(--frame-inset);
+  width:calc(100% - var(--frame-inset) * 2);
+  height:calc(100% - var(--frame-inset) * 2);
+  object-fit:cover;
+}
+.photo-window>.poster { object-fit:contain; }
+.photo-window>.personal { object-position:center 32%; }
+.card-image-label {
+  left:calc(var(--frame-inset) + 3px);
+  right:calc(var(--frame-inset) + 3px);
+  bottom:calc(var(--frame-inset) + 3px);
+  padding:15px 7px 6px;
+  background:linear-gradient(transparent,#170b18c4);
+}
+.album-image.framed-media { --frame-inset:18px; }
+.photo-mount.framed-media { --frame-inset:24px; }
+.photo-mount .photo-window>img { object-fit:contain; }
+@media(max-width:600px) {
+  .card-image-wrap.framed-media { --frame-inset:22px; }
+  .album-image.framed-media { --frame-inset:13px; }
+  .photo-mount.framed-media { --frame-inset:18px; }
+}
+@media(max-height:560px) {
+  .photo-mount.framed-media { --frame-inset:13px; }
+}
