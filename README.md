@@ -19,7 +19,7 @@ Las fotos y el catálogo ya están preparados en `dist/`. Se necesita un servido
 - Un único recorrido: encontrar una agrupación, abrir su ficha y ver sus fotos. No hay una vista global de fotografías. El álbum de eventos de las fuentes conserva su propia entrada, identificada como álbum.
 - Paginación, enlaces directos y navegación atrás y adelante del navegador; las fichas tienen un botón de regreso siempre visible.
 - Visor con marco ajustado a cada fotografía, cartela de programa, navegación por teclado, gestos en móvil y cierre con Escape.
-- «Qué es esto» abre una carta de agradecimiento firmada por Montse.
+- «Mis Anecdotas» abre el diario de Montse con dos pestañas, Cádiz y Ceuta: comienzos, recuerdos por año y una reflexión final compartida. Se conserva el texto completo de `../Mi_vida_entre_coplas_recuerdos_y_carnaval.txt`. Las pestañas permiten ratón, pantalla táctil y teclado (flechas, Inicio y Fin).
 - Enlaces a las fichas, con filtros conservados en la dirección.
 
 El año corresponde a la agrupación, no a la fecha de la fotografía. Los datos desconocidos quedan sin fechar o por clasificar. No se deducen años de fechas de archivos ni se inventan modalidades. Las fotos sin nombre de integrante conservan una descripción genérica.
@@ -32,6 +32,8 @@ El índice de integrantes se construye a partir de las etiquetas de las fotos de
 2. Si la portada incluye un año y una modalidad (p. ej., `Los Humanos Comparsa 2026.jpg`), se importan esos datos.
 3. Para completar o corregir una ficha sin renombrar los originales, editar `catalog-overrides.json`, usando el identificador de `catalog-audit.json`. Campos: `name`, `year`, `type`, `coverName` y, opcionalmente, `references` (lista con `title` y `url`). Modalidades: `comparsa`, `chirigota`, `coro`, `cuarteto`.
 4. Ejecutar `python scripts/build_catalog.py` (requiere Pillow). Se generan `dist/catalog.json`, las copias WebP y el informe de datos pendientes `catalog-audit.json`. Las conversiones existentes se reutilizan; para volver a generar una foto cambiada, borrar únicamente sus dos derivados en `dist/assets/photos/` antes de reconstruir.
+
+Las correcciones de etiquetas y orientación de una fotografía se guardan en `photo-overrides.json`, usando su ruta relativa a `_fuentes/`. `name` y `named` corrigen la etiqueta y su uso en el índice de integrantes; `exifOrientation` sustituye únicamente la orientación EXIF errónea. Los derivados corregidos llevan un sufijo de orientación para que el navegador los actualice. Las portadas nuevas admiten nombres separados por espacios o guiones bajos. Los originales se conservan intactos.
 
 Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles para el visor y miniaturas de hasta 640 píxeles. Los derivados no incluyen los metadatos EXIF de las fotografías.
 
@@ -46,7 +48,7 @@ Los originales no se modifican. Se generan imágenes de hasta 1.600 píxeles par
 - `dist/theatre.css` contiene el acabado de materiales, las molduras, las tarjetas, los controles y los álbumes. El fondo del Falla sigue fijo detrás de la portada y del archivo.
 - Animaciones: apertura de los telones, entrada escalonada de las fichas y fotografías al recorrer el álbum, apertura de diálogos y transición del marco al cambiar de fotografía. Se respeta `prefers-reduced-motion`, incluso si la preferencia cambia con la página abierta. El pie de foto permite desplazamiento cuando una etiqueta colectiva es demasiado larga.
 - Las portadas y los recuerdos proceden exclusivamente de la colección facilitada.
-- La página no usa confeti, SVG decorativos ni botones cuyo único propósito sea hacer scroll. Se conservan los iconos funcionales. El único panel explicativo es el agradecimiento solicitado por el usuario.
+- La página no usa confeti, SVG decorativos ni botones cuyo único propósito sea hacer scroll. Se conservan los iconos funcionales. El diario de anécdotas mantiene el papel y el marco del programa; las pestañas y el cierre siguen visibles mientras se lee.
 
 ## Publicación
 

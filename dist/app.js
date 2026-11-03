@@ -294,7 +294,7 @@ function groupCard(group) {
   const preview = selectedMember ? `Con ${selectedMember.name} · ${memberPhotoCount} ${memberPhotoCount === 1 ? 'fotografía' : 'fotografías'}` : names.length ? `Con ${names.slice(0, 2).join(' · ')}${names.length > 2 ? '…' : ''}` : 'Recuerdos conservados en mi álbum.';
   return `<article class="group-card"><button type="button" class="card-open" data-open-group="${escapeHTML(group.id)}" data-photos="${group.photos.length}" data-member-photos="${memberPhotoCount}" data-covers="${Number(Boolean(group.cover))}" aria-label="Abrir ${escapeHTML(name)}, ${cityName(group.city)}${group.year ? ', ' + group.year : ''}, ${group.photos.length} fotografías y ${Number(Boolean(group.cover))} portada">
     <div class="card-topline"><span>${cityName(group.city)}</span><span class="card-year">${group.isEvent ? 'Recuerdos' : group.year || 'Año por confirmar'}</span></div>
-    <div class="card-image-wrap framed-media"><span class="photo-window"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async"><span class="card-image-label">${group.cover ? 'El tipo de aquel carnaval' : 'Una fotografía de mi álbum'}</span></span></div>
+    <div class="card-image-wrap framed-media"><span class="photo-window"><img class="card-image ${imageClass}" src="${image.thumb}" width="${image.width}" height="${image.height}" alt="${escapeHTML(group.cover ? `Portada de ${group.name}` : photoLabel(image))}" loading="lazy" decoding="async">${group.cover ? '' : '<span class="card-image-label">Una fotografía de mi álbum</span>'}</span></div>
     <div class="card-info"><div class="card-type">${escapeHTML(group.isEvent ? 'Álbum de recuerdos' : group.type ? typeName(group.type) : 'Modalidad por confirmar')}</div><h3>${escapeHTML(name)}</h3><p class="card-people">${escapeHTML(preview)}</p><div class="card-counts"><div class="card-photo-count"><strong>${number(group.photos.length)}</strong><span>fotografías del álbum</span></div><div class="card-cover-count"><strong>${group.cover ? '1' : '—'}</strong><span>${group.cover ? 'portada' : 'sin portada aparte'}</span></div></div><span class="card-cta">Abrir el álbum ${icon('arrow')}</span></div>
   </button></article>`;
 }
@@ -450,7 +450,7 @@ function updatePhoto() {
   image.src = photo.src;
   image.alt = cover ? `Portada de ${group.name}` : photoLabel(photo);
   $('#photo-position').textContent = `${cover ? 'Portada' : 'Fotografía'} ${String(currentPhotoIndex + 1).padStart(2, '0')} de ${String(currentPhotos.length).padStart(2, '0')}`;
-  $('#photo-kind').textContent = cover ? 'EL TIPO DE AQUEL CARNAVAL' : 'UN RECUERDO COMPARTIDO';
+  $('#photo-kind').textContent = cover ? 'PORTADA' : 'UN RECUERDO COMPARTIDO';
   $('#photo-caption').textContent = cover ? group.name : photoLabel(photo);
   $('#photo-context').textContent = `${group.isEvent ? 'Recuerdos en eventos' : group.name} · ${cityName(group.city)}${group.year ? ` · Agrupación de ${group.year}` : ' · Año por confirmar'}${cover ? ' · Portada' : ''}`;
   $('#photo-prev').disabled = currentPhotoIndex === 0;
@@ -581,6 +581,30 @@ function setupEvents() {
   photoDialog.addEventListener('close', () => photoAnimation?.cancel());
   $('#photo-prev').addEventListener('click', () => movePhoto(-1));
   $('#photo-next').addEventListener('click', () => movePhoto(1));
+  const anecdoteTabs = $$('[role="tab"]', aboutDialog);
+  function selectAnecdoteTab(selected, focus = false) {
+    for (const tab of anecdoteTabs) {
+      const active = tab === selected;
+      tab.setAttribute('aria-selected', String(active));
+      tab.tabIndex = active ? 0 : -1;
+      document.getElementById(tab.getAttribute('aria-controls')).hidden = !active;
+    }
+    aboutDialog.scrollTop = 0;
+    if (focus) selected.focus({ preventScroll: true });
+  }
+  for (const [index, tab] of anecdoteTabs.entries()) {
+    tab.addEventListener('click', () => selectAnecdoteTab(tab));
+    tab.addEventListener('keydown', event => {
+      let next;
+      if (event.key === 'ArrowRight') next = (index + 1) % anecdoteTabs.length;
+      else if (event.key === 'ArrowLeft') next = (index - 1 + anecdoteTabs.length) % anecdoteTabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = anecdoteTabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectAnecdoteTab(anecdoteTabs[next], true);
+    });
+  }
   $('#about-open').addEventListener('click', () => { aboutDialog.showModal(); aboutDialog.scrollTop = 0; });
   $('#close-about').addEventListener('click', () => aboutDialog.close());
   aboutDialog.addEventListener('click', event => {

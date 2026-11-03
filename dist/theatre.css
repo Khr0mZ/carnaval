@@ -11,7 +11,19 @@ body { background: #200c18; }
 .theatre-backdrop::after { background: radial-gradient(ellipse at 50% 35%,transparent 15%,#1a071b70 100%); }
 .site-header { z-index:4; padding-top:27px; padding-bottom:20px; }
 .brand-name { color:#ffe7af; text-shadow:0 2px 0 #5c2535,0 5px 20px #130712; }
-.brand-small { color:#f0d1a0; }
+.site-header .brand-small {
+  display:block;
+  color:#fff3ce;
+  font:600 12px/1.5 var(--sans);
+  letter-spacing:1.1px;
+  padding:7px 11px;
+  border-left:2px solid #e9c58c;
+  background:#260b1be8;
+}
+@media(max-width:850px) {
+  .site-header .brand { flex-direction:column; align-items:flex-start; gap:8px; }
+  .site-header .brand-small { font-size:10px; padding:4px 8px; letter-spacing:.8px; }
+}
 
 /* Art-directed wings frame the full viewport without stretching the fabric. */
 .hero { position:relative; min-height:590px; padding:65px 32px 82px; isolation:isolate; }

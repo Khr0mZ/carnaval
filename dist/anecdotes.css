@@ -1,0 +1,75 @@
+/* Montse's diary keeps the programme paper and the existing alpha-clipped frame. */
+.anecdotes-dialog {
+  width:min(820px,calc(100vw - 40px));
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#a5824e #efdfbc;
+  color-scheme:light;
+}
+.anecdotes-navigation {
+  position:sticky;
+  top:0;
+  z-index:4;
+  background:#eddbb8 var(--programme-paper) center/cover;
+  box-shadow:0 8px 16px #603b2b1a;
+}
+.anecdotes-dialog .letter-toolbar { position:static; }
+.anecdotes-dialog .letter-toolbar>span { color:#68303b; letter-spacing:.3px; }
+.anecdotes-tabs {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:15px;
+  padding:15px 24px 19px;
+  border-bottom:3px double #a5824e80;
+}
+.anecdote-tab { min-height:48px; font-size:17px; }
+.anecdote-tab[aria-selected="true"] {
+  --surface-fill:#f7e9ca var(--programme-paper) center/cover;
+  color:#652b39;
+}
+.anecdote-tab[aria-selected="true"]:hover {
+  --surface-fill:#fff1d3 var(--programme-paper) center/cover;
+  color:#652b39;
+}
+.anecdote-tab:focus-visible { outline-color:#752f43; outline-offset:3px; }
+.anecdotes-diary { padding:34px 46px 45px; }
+.anecdotes-intro { text-align:center; padding-bottom:28px; }
+.anecdotes-intro .eyebrow { color:#92683f; font-size:8px; letter-spacing:1.8px; }
+.anecdotes-intro h2 {
+  margin:15px 0;
+  color:#582836;
+  font:400 clamp(25px,3.2vw,33px)/1.35 var(--poster);
+  text-wrap:balance;
+}
+.anecdotes-diary p { margin:17px 0; font:500 24px/1.55 var(--serif); color:#694737; }
+.anecdotes-intro p { font-size:22px; font-style:italic; color:#85603e; }
+.anecdotes-diary h3 {
+  margin:15px 0 30px;
+  color:#652b39;
+  font:400 25px/1.4 var(--poster);
+  text-wrap:balance;
+}
+.anecdotes-panel:focus-visible { outline:2px solid #94683f; outline-offset:7px; }
+.anecdote-entry { margin:0 0 34px; padding-top:24px; border-top:3px double #a5824e70; }
+.anecdote-entry h4 {
+  margin:0 0 18px;
+  color:#815139;
+  font:400 24px/1.4 var(--poster);
+  text-wrap:pretty;
+}
+.anecdote-entry:has(+ .anecdote-entry) { padding-bottom:3px; }
+.anecdotes-reflection { padding-top:18px; border-top:3px double #a5824e80; }
+.anecdotes-reflection>p:last-of-type { color:#652b39; font-style:italic; }
+@media(max-width:600px) {
+  .anecdotes-dialog { width:calc(100vw - 18px); }
+  .anecdotes-tabs { gap:12px; padding:12px 16px 16px; }
+  .anecdote-tab { min-height:48px; padding:13px 16px; font-size:15px; }
+  .anecdotes-diary { padding:26px 20px 34px; }
+  .anecdotes-intro .eyebrow { font-size:7px; letter-spacing:1.1px; }
+  .anecdotes-intro h2 { font-size:25px; }
+  .anecdotes-intro p { font-size:20px; }
+  .anecdotes-diary h3 { font-size:22px; margin-bottom:24px; }
+  .anecdotes-diary p { font-size:22px; }
+  .anecdote-entry h4 { font-size:21px; }
+  .anecdote-entry { margin-bottom:28px; padding-top:21px; }
+}

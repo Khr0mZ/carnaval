@@ -1,13 +1,13 @@
 {
   "stats": {
-    "groups": 219,
-    "photos": 1125,
-    "images": 1337,
+    "groups": 220,
+    "photos": 1128,
+    "images": 1343,
     "cities": 2,
     "firstYear": 2007,
     "lastYear": 2026,
-    "undated": 4,
-    "unclassified": 4
+    "undated": 2,
+    "unclassified": 3
   },
   "pending": [
     {
@@ -25,11 +25,11 @@
       "hasCover": false
     },
     {
-      "id": "ceuta/los-camarones",
-      "name": "Los Camarones",
-      "year": 2024,
+      "id": "ceuta/los-mamarrachis",
+      "name": "Los Mamarrachis",
+      "year": null,
       "type": null,
-      "hasCover": true
+      "hasCover": false
     },
     {
       "id": "ceuta/los-matariles",
@@ -46,31 +46,10 @@
       "hasCover": false
     },
     {
-      "id": "ceuta/los-recortados",
-      "name": "Los Recortados",
-      "year": null,
-      "type": null,
-      "hasCover": false
-    },
-    {
       "id": "ceuta/los-recortaos",
       "name": "Los Recortaos",
       "year": null,
       "type": null,
-      "hasCover": false
-    },
-    {
-      "id": "ceuta/los-san-fermines",
-      "name": "Los San Fermines",
-      "year": null,
-      "type": "chirigota",
-      "hasCover": false
-    },
-    {
-      "id": "ceuta/los-superheroes",
-      "name": "Los Superhéroes",
-      "year": null,
-      "type": "chirigota",
       "hasCover": false
     }
   ]

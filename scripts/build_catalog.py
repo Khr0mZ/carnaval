@@ -42,12 +42,15 @@ if override_file.exists():
     for key, value in json.loads(override_file.read_text(encoding="utf-8")).items():
         OVERRIDES[key] = {**OVERRIDES.get(key, {}), **value}
 
+photo_override_file = PROJECT / "photo-overrides.json"
+PHOTO_OVERRIDES = json.loads(photo_override_file.read_text(encoding="utf-8")) if photo_override_file.exists() else {}
+
 
 def cover_score(photo, folder):
-    stem = normal(photo.stem)
+    stem = normal(photo.stem).replace("_", " ")
     stem = re.sub(r"\b(?:19|20)\d{2}\b|\b(?:comparsa|chirigota|cuarteto|coro)\b|jpg$", "", stem).strip()
     score = SequenceMatcher(None, normal(folder), stem).ratio()
-    if re.search(r"\b(comparsa|chirigota|cuarteto|coro)\b", normal(photo.stem)):
+    if re.search(r"\b(comparsa|chirigota|cuarteto|coro)\b", normal(photo.stem).replace("_", " ")):
         score += 0.65
     return score
 
@@ -73,7 +76,7 @@ for city_path in sorted(SOURCE.iterdir()):
             assert cover in files, f"Missing override cover: {cover}"
         stem = cover.stem if cover else ""
         year_match = re.search(r"(?<!\d)((?:19|20)\d{2})(?!\d)", stem)
-        type_match = re.search(r"\b(comparsa|chirigota|cuarteto|coro)\b", normal(stem))
+        type_match = re.search(r"\b(comparsa|chirigota|cuarteto|coro)\b", normal(stem).replace("_", " "))
         year = int(year_match.group(1)) if year_match else None
         group = {
             "id": group_id, "name": title(folder.name), "city": city_path.name,
@@ -84,33 +87,40 @@ for city_path in sorted(SOURCE.iterdir()):
         if "name" in override:
             group["name"] = override["name"]
         for file in files:
-            photo_id = hashlib.sha256(file.relative_to(SOURCE).as_posix().encode()).hexdigest()[:16]
+            relative_source = file.relative_to(SOURCE).as_posix()
+            photo_override = PHOTO_OVERRIDES.get(relative_source, {})
+            orientation_override = photo_override.get("exifOrientation")
+            assert orientation_override is None or orientation_override in range(1, 9), f"Invalid orientation: {relative_source}"
+            photo_id = hashlib.sha256(relative_source.encode()).hexdigest()[:16]
+            asset_id = f"{photo_id}-o{orientation_override}" if orientation_override is not None else photo_id
             with Image.open(file) as im:
                 width, height = im.size
-                if im.getexif().get(274) in (5, 6, 7, 8):
+                if photo_override.get("exifOrientation", im.getexif().get(274)) in (5, 6, 7, 8):
                     width, height = height, width
             label = re.sub(r"\s*\(\d+\)\s*$", "", file.stem).strip(" .")
             label = re.sub(r"\.?(?:jpe?g)$", "", label, flags=re.I).strip(" .")
             unnamed = bool(re.match(r"^(?:IMG|DSC|PXL|WhatsApp|20\d{6})", label, re.I))
-            photo = {"id": photo_id, "name": "Un recuerdo con Montse" if unnamed else label, "named": not unnamed,
-                     "src": f"assets/photos/{photo_id}.webp", "thumb": f"assets/photos/{photo_id}-sm.webp",
-                     "width": width, "height": height, "source": file.relative_to(SOURCE).as_posix()}
+            photo = {"id": photo_id, "name": photo_override.get("name", "Un recuerdo con Montse" if unnamed else label), "named": photo_override.get("named", not unnamed),
+                     "src": f"assets/photos/{asset_id}.webp", "thumb": f"assets/photos/{asset_id}-sm.webp",
+                     "width": width, "height": height, "source": relative_source}
             if file == cover:
                 photo["name"] = group["name"]
                 group["cover"] = photo
             else:
                 group["photos"].append(photo)
-            jobs.append((file, photo_id))
+            jobs.append((file, asset_id, photo_override))
         groups.append(group)
 
 
 def convert(job):
-    source, photo_id = job
+    source, asset_id, photo_override = job
     for suffix, size, quality in [("", 1600, 79), ("-sm", 640, 75)]:
-        output = ASSETS / f"{photo_id}{suffix}.webp"
+        output = ASSETS / f"{asset_id}{suffix}.webp"
         if output.exists():
             continue
         with Image.open(source) as image:
+            if "exifOrientation" in photo_override:
+                image.getexif()[274] = photo_override["exifOrientation"]
             image = ImageOps.exif_transpose(image).convert("RGB")
             image.thumbnail((size, size), Image.Resampling.LANCZOS)
             image.save(output, "WEBP", quality=quality, method=4)
@@ -129,7 +139,7 @@ if __name__ == "__main__":
         "undated": sum(not g["year"] and not g["isEvent"] for g in groups),
         "unclassified": sum(not g["type"] and not g["isEvent"] for g in groups),
     }}
-    (PROJECT / "dist" / "catalog.json").write_text(json.dumps(catalogue, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    (PROJECT / "catalog-audit.json").write_text(json.dumps({"stats": catalogue["stats"], "pending": [{"id": g["id"], "name": g["name"], "year": g["year"], "type": g["type"], "hasCover": bool(g["cover"])} for g in groups if not g["isEvent"] and (not g["year"] or not g["type"] or not g["cover"])]}, ensure_ascii=False, indent=2), encoding="utf-8")
+    (PROJECT / "dist" / "catalog.json").write_text(json.dumps(catalogue, ensure_ascii=False, separators=(",", ":")), encoding="utf-8", newline="\n")
+    (PROJECT / "catalog-audit.json").write_text(json.dumps({"stats": catalogue["stats"], "pending": [{"id": g["id"], "name": g["name"], "year": g["year"], "type": g["type"], "hasCover": bool(g["cover"])} for g in groups if not g["isEvent"] and (not g["year"] or not g["type"] or not g["cover"])]}, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
     print(json.dumps(catalogue["stats"]))
     print(f"Web assets: {sum(p.stat().st_size for p in ASSETS.iterdir()) / 1e6:.1f} MB")

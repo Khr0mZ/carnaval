@@ -6,6 +6,8 @@ The user explicitly rejected publishing to Sites without authorization. Do not c
 
 The user authorized making `Khr0mZ/carnaval` public and publishing this collection on GitHub Pages on 2026-11-02. Preserve that selected repository and audience in subsequent work unless instructed otherwise.
 
+On 2026-11-03, after reviewing the pending local changes, the user explicitly authorized publishing and deploying them to the existing GitHub Pages site.
+
 Keep the original family photographs in `../_fuentes/` outside the repository. The optimized images in `dist/` are the website assets. Do not commit `.local/`, credentials, or archives.
 
 # Design and browsing
@@ -20,6 +22,6 @@ All generated decoration must look photographic, including the theatre, cloth, p
 
 The same alpha clipping applies to the material fills and content of city, modality and theatre controls, and to framed panels. Paper or velvet must not show outside a frame's silhouette. The SVG masks used to assemble the bitmap alpha are functional clipping, not decorative artwork. Use "recuerdos" in interface labels, including "Mi álbum de recuerdos", while preserving source grouping and person names.
 
-Browse by grouping first, then open the group's album and its photos. Do not reintroduce a global photo view or scroll-only navigation buttons. The user has explicitly requested the top-right "Qué es esto" button again, opening an emotional thank-you letter signed by Montse. Show accurate contextual photo counts by category and separate album photographs from covers.
+Browse by grouping first, then open the group's album and its photos. Do not reintroduce a global photo view or scroll-only navigation buttons. The top-right button is now "Mis Anecdotas", opening Montse's complete diary from `../Mi_vida_entre_coplas_recuerdos_y_carnaval.txt` with separate Cádiz and Ceuta tabs and a shared final reflection. Keep the tabs and close control visible while reading, with keyboard navigation. Show accurate contextual photo counts by category and separate album photographs from covers.
 
 Always sort the grouping list alphabetically in Spanish, with no ordering selector. The requested member autocomplete filters grouping entries using the names preserved in the photo labels. Keep it combinable with city, year, modality and grouping-name search. Do not claim complete rosters or merge unverified aliases.

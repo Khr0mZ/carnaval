@@ -179,6 +179,23 @@
     "year": 2026,
     "type": "comparsa"
   },
+  "ceuta/la-pasion-turca": {
+    "coverName": "Los_que_se_van_a_Turquia_Chirigota_2019.png",
+    "year": 2019,
+    "type": "chirigota"
+  },
+  "ceuta/pa-rafa-el-rafa-yo": {
+    "year": 2024,
+    "type": "chirigota"
+  },
+  "ceuta/las-genias": {
+    "year": 2025,
+    "type": "comparsa"
+  },
+  "ceuta/los-camarones": {
+    "year": 2024,
+    "type": "comparsa"
+  },
   "ceuta/la-revuelta": {
     "year": 2013,
     "type": "chirigota"
